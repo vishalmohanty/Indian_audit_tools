@@ -5,8 +5,16 @@
       pref:renderer="css">
 
 <head>
-<link rel="shortcut icon" src="./voteIcon.ico"/>
-<link rel="shortcut icon" src="./voteIcon.ico"/>
+<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Bootstrap -->
+<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="shortcut icon" href="./voteIcon.ico"/>
+<link rel="shortcut icon" href="./voteIcon.ico"/>
 <link rel="stylesheet" type="text/css" href="./pbsDefault.css"/>
 <link rel="stylesheet" type="text/css" href="./jquery-ui.min.css" />
 
@@ -71,12 +79,12 @@
       // set up the first contest
       addContest();
       $("#nSeats").change(function(){$('#nObj').val(this.value);updateVotes();});
-      $("#nCandi").change(function(){updateVotes()});
+      $("#nCandi").change(function(){setCandidates()});
       $("#nConsti").change(function(){updateVotes()});
       $("#addContestButton").click(function(){addContest();});
       $("#removeContestButton").click(function(){removeContest();});
       $("input[type=text]").focus(function(){this.select();});
-      $("#risk").change(function(){updateVotes();});
+      $("#risk").change(function(){updateRisk();});
       $("#nextItem").click(function(){nextSample();});
       $("#reset").click(function(){resetMe();});
       $("#voteForContest").change(function(){updateVotes();});
@@ -87,7 +95,7 @@
       });
    });
 // ------------------------------------
-        var candidates = [];
+        var parties = [];
         var winners = [];
         var losers = [];
         var names = [];
@@ -99,73 +107,78 @@
         var wf1=0.0;
         var wf2 = 0.0;
         function addContest() {  // needs to be modified
-            candidates.push([]);
+            parties.push([]);
             names.push([]);
             winners.push([]);
             losers.push([]);
-            var conStr = (candidates.length-1).toString();
-            var str = '<hr align="left" id="hrCon' + conStr + '"><div class="contest" id="contest' + conStr + '" contest="' + conStr + '">' +
-                      '<span class="label">Contest ' + candidates.length.toString() +
-                      '.&nbsp;&nbsp;</span>' +
+            var conStr = (parties.length-1).toString();
+            var str = '<div class="form-group" id="contest' + conStr + '" contest="' + conStr + '">' +
                       '<label for="contestName' + conStr + '">Contest name: </label>' +
-                      '<input type="text" size="80" id="contestName' + conStr + '" class="contestName" /><br />' +
-                      '<label for="voteForContest' + conStr +  '">Winners:&nbsp;</label>' +
-                      '<select id="voteForContest' + conStr + '" onchange="findMinMargin()">' +
-                         '<option value="1">1</option>' +
-                         '<option value="2">2</option>' +
-                         '<option value="3">3</option>' +
-                         '<option value="4">4</option>' +
-                         '<option value="5">5</option>' +
-                         '<option value="6">6</option>' +
-                         '<option value="7">7</option>' +
-                         '<option value="8">8</option>' +
-                         '<option value="9">9</option>' +
-                         '<option value="10">10</option>' +
-                      '</select><p><span class="label">Reported votes:</span></p></div><br />' +
-                      '<div class="addCandidate" id="addCandidate' + conStr + '" contest="' + conStr + '">' +
-                      '<input type="button" id="addCandidateButton' + conStr +
-                      '" value="Add candidate to contest ' + candidates.length.toString() +
+                      '<input class = "form-control" placeholder="Contest" type="text" size="80" id="contestName' + conStr + '" class="contestName" />' +
+                      '<p><span class="label">Reported seats:</span></p></div>' +
+                      '<div class="form-group" id="addCandidate' + conStr + '" contest="' + conStr + '"></div>';
+                      /*'<input type="button" id="addCandidateButton' + conStr +
+                      '" value="Add candidate to contest ' + parties.length.toString() +
                       '" contest="' + conStr + '"/>' +
                       '<input type="button" id="removeCandidateButton' + conStr +
-                      '" value="Remove last candidate from contest ' + candidates.length.toString() +
-                      '" contest="' + conStr + '"/></div>';
+                      '" value="Remove last candidate from contest ' + parties.length.toString() +
+                      '" contest="' + conStr + '"/></div>';*/
             $(".contestList").append(str);
-            $("#contest" + (candidates.length-1).toString()).append(addCandidate(candidates.length-1));
-            $("#contest" + (candidates.length-1).toString()).append(addCandidate(candidates.length-1));
+            //$("#contest" + (parties.length-1).toString()).append(addCandidate(parties.length-1));
+            //$("#contest" + (parties.length-1).toString()).append(addCandidate(parties.length-1));
             var conRef = "#contest" + conStr;
-            var candRefLast = '.candidate.contest' + candidates.length + ':last';
-            var thisContest = candidates.length-1;
-            $("#contestName" + conStr).blur(function(){names[conStr][0] = this.value;});
+            var candRefLast = '.candidate.contest' + parties.length + ':last';
+            var thisContest = parties.length-1;
+            $("#contestName" + conStr).blur(function(){$("#contestName" + conStr).value = this.value;});
             $("#addCandidateButton" + conStr).click(function(){$(conRef).append(addCandidate(conStr));updateVotes();});
             $("#removeCandidateButton" + conStr).click(function(){$(candRefLast).remove();
-                                                                  candidates[thisContest].pop();
+                                                                  parties[thisContest].pop();
                                                                   names[thisContest].pop();
                                                                   updateVotes();}
                                                       );
             return(true);
         }
 
+        function setCandidates(){
+            var conStr = "0";
+            var conRef = "#contest0";
+            var candRefLast = '.candidate.contest' + parties.length + ':last';
+            var thisContest = parties.length-1;
+            while(parties[thisContest].length>0){
+                $(candRefLast).remove();
+                parties[thisContest].pop();
+                names[thisContest].pop();
+                
+            }
+            updateVotes();    
+            for(var i=0; i<nCandidates; i++){
+                $(conRef).append(addCandidate(conStr));
+            }
+            updateVotes();
+                        
+        }
         function removeContest() {  // not needed
-            var conStr = (candidates.length-1).toString();
+            var conStr = (parties.length-1).toString();
             $("#hrCon" + conStr).remove();
             $("#contest" + conStr).remove();
             $("#addCandidateButton" + conStr).remove();
             $("#removeCandidateButton" + conStr).remove();
-            candidates.pop();
+            parties.pop();
             names.pop();
             return(true);
         }
 
         function addCandidate(contest) {  // needs to be included in addContest
-            candidates[contest].push(0);
-            var theCandidate = (parseInt(contest)+1).toString() + '_' + candidates[contest].length.toString();
-            return('<div class="candidate contest' + (parseInt(contest)+1).toString() + '" ' +
+            parties[contest].push(0);
+            var theCandidate = (parseInt(contest)+1).toString() + '_' + parties[contest].length.toString();
+            names[contest][(parties[contest].length-1)]="Party"+parties[contest].length.toString();
+            return('<form class="form-inline"><div class="candidate contest' + (parseInt(contest)+1).toString() + '" ' +
                    'id="candidate_' +  theCandidate + '">' +
-                   '<label for="name' + theCandidate + '">Candidate ' + candidates[contest].length +  ' Name: </label> ' +
-                   '<input type="text" size="40" id="name' + theCandidate + '" onblur="names[' + contest + '][' +
-                      (candidates[contest].length-1) + ']=this.value;" />' +
-                   '<label for="nSeats' + theCandidate + '">&nbsp;&nbsp;Votes: ' + '</label>' +
-                   '<input type="text" size="10" id="nSeats' + theCandidate + '" onblur="updateVotes()"/></div>');
+                   '<label for="name' + theCandidate + '">Party ' + parties[contest].length +  ' Name: </label> ' +
+                   '<input class="form-control" type="text" value= "Party'+parties[contest].length.toString()+'" size="40" id="name' + theCandidate + '" onblur="names[' + contest + '][' +
+                      (parties[contest].length-1) + ']=this.value;" />' +
+                   '<label for="nSeats' + theCandidate + '">&nbsp;&nbsp;Seats: ' + '</label>' +
+                   '<input class="form-control" type="number" min="0" value="0" id="nSeats' + theCandidate + '" onblur="updateVotes()"/></div></form>');
         }
 
         /*Function to build the overall input table for votes for parties in every constituency
@@ -174,26 +187,28 @@
         function buildOverallMat() {
             nCandidates = parseInt($("#nCandi").val());
             nConstituencies = parseInt($("#nSeats").val());
-            var str = '<div class="candidateStatistic" id="candidateStatistic" >' +
-                      '<table id="overallMat"><tbody></tbody></table></div>';
+            var str = '<div class="panel panel-default" id="candidateStatistic" >' +
+                        '<div class="panel-heading">Vote Tally</div>'+
+                        '<div class="panel-body"><div>'+
+                      '<table class="table table-striped table-bordered" id="overallMat"><thead></thead><tbody></tbody></table></div>';
             $(".overallTable").empty();
             $(".overallTable").append(str);
-            str = '';
 
-            str += '<tr><th class="candidateRow" colspan="' + (nCandidates+1) +
-                       '" id="sizeSoFar_' + 0 + '">Vote Tally ' + $("#contestName" + 0).val() +
-                       ': 0</span></th></tr>' +
-                       '<tr><th></th>';
+            str = '';
+            str += '<tr><th></th>';
             for (var W=0; W < nCandidates; W++) {
-                    str += '<td id="Tcandidate_' + 0 + '_' + W + '">' + names[0][W] +
-                            '&nbsp;</td>';
+                    str += '<th class="text-left success" id="Tcandidate_' + 0 + '_' + W + '">' + names[0][W] +
+                            '&nbsp;</th>';
                 }
+            $("#candidateStatistic thead").append(str);
+
+            str='';
             for (var i=0; i < nConstituencies; i++) {
                 str += '</tr>';
-                str += '<tr id="Tconsti_'  + i + '"><td>' + 'constituency ' + (i+1) +
+                str += '<tr id="Tconsti_'  + i + '"><td class="info">' + 'constituency ' + (i+1) +
                        '&nbsp;</td>';
                 for (var W=0; W < nCandidates; W++) {
-                    str += '<td><input type="number" id="votes_for_' + i + '_' + W +
+                    str += '<td class="text-left"><input type="number" id="votes_for_' + i + '_' + W +
                        '" value="0" /></td>';
                 }
                 str += '</tr>';
@@ -202,11 +217,11 @@
             //console.log(str);
             $("#candidateStatistic tbody").empty();
             $("#candidateStatistic tbody").append(str);
-            $("#candidateStatistic td").css('backgroundColor', '#fff');
-            $(".candidateRow").css('backgroundColor', '#fff');
+            //$("#candidateStatistic td").css('backgroundColor', '#fff');
+            //$(".candidateRow").css('backgroundColor', '#fff');
             //$(".candidateSpinner").spinner({min: 0});
             //$(".constiSpinner").spinner({min: 0});
-            /*for (var i=0; i< candidates.length; i++) {
+            /*for (var i=0; i< parties.length; i++) {
                 $("[id^=votes_for_" + i + "]").change(
                    (function(x){ return function(){updateTestStatistic(x);}})(i));
                 
@@ -216,7 +231,7 @@
             return(true);
         }
 
-        /*Auxiliary helping function which reads in the votes for candidates from HTML input into a 2D array
+        /*Auxiliary helping function which reads in the votes for parties from HTML input into a 2D array
         No Parameters
         Return value: true*/
         function getData(){
@@ -241,29 +256,49 @@
 
             //Building the UI
             var str='';
-            str = '<div class="riskStatistic" id="riskStatistic" >' +
-                      '<table id="riskMat"><tbody></tbody></table></div>';
-            $(".riskMat").empty();
-            $(".riskMat").append(str);
+            str = '<div class="table-responsive"><table class="table table-bordered table-striped" id="riskMat"><thead></thead><tbody></tbody></table></div>';
+            //$(".riskMat").empty();
+            //$("#riskStatistic tbody").empty();
+            $(".newRisks").empty();
+            $(".newRisks").append(str);
             str = '';
+            str+='<tr>';
+            
+            for(var i=0; i<nConstituencies; i++){
+                str+='<th class="candidateRow text-left">'+ "Constituency " + (i+1) +'</th>';
+            }
+            str+='</tr>';
+            $("#riskMat thead").append(str);
+            //$(".newRisks").append(str);
+
+            str='';
             str+='<tr>';
 
             for(var i=0; i<nConstituencies; i++){
-                str+='<th>'+ "Constituency" + (i+1) +" "+'</th>';
+                str+='<td class="text-left">'+ roundToDig(riskArray[i], 2) + '</td>';
             }
-            str+='</tr><tr>';
-            for(var i=0; i<nConstituencies; i++){
-                str+='<td>'+ roundToDig(riskArray[i], 2) + '</td>';
-            }
+            
+            /*
+            //Organising the risk table as 5 per row
+            for (var i=0; i<nConstituencies; i+=5){
+                for(var j=i; j<nConstituencies && j<i+5; j++){
+                    str+='<th class="candidateRow">'+ "Constituency" + (j+1) +'</th> &nbsp; &nbsp';
+                }
+                str+='</tr><tr class="active">';
+                for(j=i; j<nConstituencies && j<i+5; j++){
+                    str+='<td>'+ roundToDig(riskArray[j], 2) + '</td>';
+                }
+            }*/
             str+='</tr>';
-            $("#riskStatistic tbody").append(str);
-            $("#riskStatistic td").css('backgroundColor', '#eee');
-            $(".newRisks").append(str);
+            $("#riskMat tbody").append(str);
+
+            //$("#riskStatistic td").css('backgroundColor', '#eee');
+            //$(".newRisks").append(str);
         }
 
-        /*Function to convert the votes for every constituency into percentages for the candidates
+        /*Function to convert the votes for every constituency into percentages for the parties
         No parameters
-        Return Value: 2D array storing the percentages of votes for candidates in every constituency*/
+        Return Value: 2D array storing the percentages of votes for parties in every constituency*/
         function convToPerc(){
             var percArray = [];
             var dataArray = [];
@@ -442,16 +477,16 @@
             return riskArray;
         }
 
-        function buildTestMatrix() { //not needed
-            /*   Builds the matrix of test statistics and populates the Wald factor matrix.
+        /*function buildTestMatrix() { //not needed
+               Builds the matrix of test statistics and populates the Wald factor matrix.
                 Assumes that winners[] and losers[] have been populated.
-            */
+            
             var str = '<div class="testStatistic" id="testStatistic" >' +
                       '<table id="testMatrix"><tbody></tbody></table></div>';
             $(".testTable").empty();
             $(".testTable").append(str);
             str = '';
-            for (var i=0; i < candidates.length; i++) {
+            for (var i=0; i < parties.length; i++) {
                 str += '<tr><th class="voteRow" colspan="' + (winners[i].length+1) +
                        '" id="sizeSoFar_' + i + '">Audited votes for ' + $("#contestName" + i).val() +
                        ': 0</span></th></tr>' +
@@ -477,7 +512,7 @@
             $("#testStatistic td").css('backgroundColor', '#E55');
             $(".voteRow").css('backgroundColor', '#999');
             $(".voteSpinner").spinner({min: 0});
-            for (var i=0; i< candidates.length; i++) {
+            for (var i=0; i< parties.length; i++) {
                 $("[id^=votes_for_" + i + "]").change(
                    (function(x){ return function(){updateTestStatistic(x);}})(i));
             }
@@ -485,22 +520,22 @@
             lastWinner=firstLoser=0;
             // populate the Wald factor matrix
             waldFactor = [];
-            for (var i=0; i < candidates.length; i++) {
+            for (var i=0; i < parties.length; i++) {
                 waldFactor.push({});
                 for (var W=0; W < winners[i].length; W++) {
                     for (var L=0; L < losers[i].length; L++) {
                         hashString = winners[i][W] + ',' + losers[i][L];
-                        waldFactor[i][hashString] = candidates[i][winners[i][W]] /
-                                         (candidates[i][winners[i][W]] + candidates[i][losers[i][L]]);
+                        waldFactor[i][hashString] = parties[i][winners[i][W]] /
+                                         (parties[i][winners[i][W]] + parties[i][losers[i][L]]);
                     }
                 }
             }
-            var dum = candidates[0].slice().sort(numberLessThan).reverse();
+            var dum = parties[0].slice().sort(numberLessThan).reverse();
             wf1 = 2.0*dum[0]/(dum[0]+dum[1]);
             wf2 = 2.0*(ballots-dum[0])/(2.0*ballots-dum[0]-dum[1]);
 
             return(true);
-        }
+        }*/
         
         function updateTestStatistic(i) { // needed updates the test statistic for contest i
             risk = parsePercent($("#risk").val());
@@ -583,7 +618,7 @@
             $("#ballotList").val('');
             $("#duplicates").val('');
             if(findMinMargin()) {
-                buildTestMatrix();
+                //buildTestMatrix();
                 buildOverallMat();
             }
         }
@@ -605,7 +640,7 @@
         ballots = parseInt($("#nSeats").val());
         nCandidates = parseInt($("#nCandi").val());
         nConstituencies = parseInt($("#nSeats").val());
-        if (candidates.length > 0) {
+        if (parties.length > 0) {
                minMargin = ballots;
         } else {
             minMargin = Number.NaN;
@@ -619,24 +654,24 @@
         percArray =convToPerc();
         try {
             asn = 0;
-            for (var i=0; i < candidates.length; i++) {
-                var cani = parseInt($("#voteForContest" + i.toString()).val()); //Number of winners
-                if (candidates[i].length < cani ) { // not enough candidates
+            for (var i=0; i < parties.length; i++) {
+                var cani = 1; //Number of winners
+                if (parties[i].length < cani ) { // not enough parties
                     opsOk = false;
                 }
-                for (var j=0; j < candidates[i].length; j++) {
-                    candidates[i][j] = parseInt($("#nSeats" + (i+1).toString() + '_' + (j+1).toString()).val());
+                for (var j=0; j < parties[i].length; j++) {
+                    parties[i][j] = parseInt($("#nSeats" + (i+1).toString() + '_' + (j+1).toString()).val());
                 }
-                if (vSum(candidates[i]) > cani*ballots) { // too many votes
+                if (vSum(parties[i]) > cani*ballots) { // too many votes
                     votesOk = false;
                 }
-                var dum = candidates[i].slice().sort(numberLessThan).reverse(); //duplicates and sorts
+                var dum = parties[i].slice().sort(numberLessThan).reverse(); //duplicates and sorts
                 minMargin = Math.min(minMargin, dum[cani-1] - dum[cani]);
                 winners[i] = [];
                 losers[i] = [];
-                for (var j=0; j < candidates[i].length; j++) {  // set colors; build winner and loser lists
+                for (var j=0; j < parties[i].length; j++) {  // set colors; build winner and loser lists
                     var theCandidate = (i+1).toString() + '_' + (j+1).toString();
-                    if (candidates[i][j] > dum[cani]) {
+                    if (parties[i][j] > dum[cani]) {
                         $("#candidate_" + theCandidate).css('backgroundColor', '#5e5');
                         winners[i].push(j);
                     } else {
@@ -674,17 +709,17 @@
             $("#theDilutedMargin").text(' Diluted margin: ' + commify(doubleToStr(100*minMargin/ballots,2)) + '%. ');
             $("#asn").text('Expected sample size: ' + commify(asn) + '. ');
             $("#newRisk").text("New Risk limit for winner's constituencies: " + commify(newRisk) + '. ');
-            buildTestMatrix();
+            //buildTestMatrix();
             buildOverallMat();
         }
         if (!(opsOk & votesOk & ballOk)) {
             try {
-                for (var i=0; i < candidates.length; i++) {
-                    var vf = parseInt($("#voteForContest" + i.toString()).val());
-                    if (candidates[i].length <  vf ) {
-                        throw 'Fewer candidates than voting opportunities in contest ' + (i+1).toString() + '!';
-                    }
-                    if (vSum(candidates[i]) > vf*ballots) {
+                for (var i=0; i < parties.length; i++) {
+                    var vf = 1;
+                /*    if (parties[i].length <  vf ) {
+                        throw 'Fewer parties than voting opportunities in contest ' + (i+1).toString() + '!';
+                    }*/
+                    if (vSum(parties[i]) > vf*ballots) {
                         throw 'More votes than voting opportunities in contest ' + (i+1).toString() + '!';
                     }
                 }
@@ -716,6 +751,20 @@
         }
         return(asn);
     }
+    function updateRisk(){
+        
+        try{
+            risk = parsePercent($("#risk").val());
+            if(risk>1 || risk<0)
+                throw 'Risk percentage should be between 0% and 100% only';
+        }
+        catch(e){
+            $("#risk").val("10%");
+            risk = parsePercent($("#risk").val());
+            alert(e);
+        }
+        return true;
+    }
     function updateVotes() { //needed
         clearSampleSizes();
         findMinMargin();
@@ -724,8 +773,9 @@
     function clearSampleSizes() { //needed
         $('#startSampleSize').html('&hellip;');
         if (findMinMargin()) {
-            buildTestMatrix();
+            //buildTestMatrix();
             buildOverallMat();
+            $(".newRisks").empty();
         }
         return(true);
     }
@@ -991,7 +1041,7 @@ var manifest = null;
 // -->
 </script>
 
-<title>Tools for Simple Ballot Polling Audits</title>
+<title>Efficient Auditing of Indian Elections</title>
 
 </head>
 
@@ -999,142 +1049,135 @@ var manifest = null;
 
 </head>
 <div id="bodyDiv">
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Home</a>
+    </div>
 
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="file:///C:/Users/Anmol%20PC/Desktop/Pikul/UoM/Acads/webpages/simpleBP1.html">Simple Ballot Polling Audit<span class="sr-only">(current)</span></a></li>
+        </ul>
+        <ul class="nav navbar-nav">
+        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/auditTools.htm">Stark's Ballot Comparison Audit</a></li></ul>
+        <ul class="nav navbar-nav">
+        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm">Stark's Ballot Polling Audit</a></li></ul>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Developers</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 <h1>
-   Tools for Simple Ballot Polling Audits
+<center>Efficient Auditing of Indian Elections</center>
 </h1>
 
 <p>
-   This page implements some tools to conduct &quot;simple ballot-polling&quot; risk-limiting audits as described in
-   <a href="http://statistics.berkeley.edu/~stark/Preprints/gentle12.pdf">A Gentle Introduction to
-   Risk-Limiting Audits</a> (AGI), by Lindeman and Stark, and
-   <a href="https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf">
-   BRAVO: Ballot-polling Risk-limiting Audits to Verify Outcomes</a>, by Lindeman, Stark, and Yates.
-   For an implementation of tools for &quot;comparison&quot; risk-limiting audits as described in AGI, see
-   <a href="./auditTools.htm">http://statistics.berkeley.edu/~stark/Vote/auditTools.htm</a>.
+   This Page implements the tools for finding out the risk limits for auditing of multi-level
+   elections as is the case in India. It features a one-time contest for electing a single Party or Coalition 
+   to power in the Central Government.
 </p>
 
 <p id="hideAll">
-  To hide or show everything but the tools, <a href="#" id="hideAllProse">click this link</a>.
+  To hide or show everything but the tools <button type="button" class="btn btn-default" id="hideAllProse">Click Here</button>
 </p>
 
 <p>
-   A <em>risk-limiting audit</em> is a procedure that is guaranteed to have a large chance
-   of progressing to a full hand count of the votes if the electoral outcome is wrong.
-   The outcome according to the hand count then replaces the outcome being audited.
-   The <em>risk limit</em> is the maximum chance that the audit will not progress
-   to a full hand count if the electoral outcome is incorrect, no matter why it is
-   incorrect&mdash;whether because of voter error, bugs, pollworker error, or
-   deliberate fraud&mdash;provided the audit trail is complete and accurate.
+<div class="panel panel-primary">
+  <div class="panel-heading">Theory</div>
+  <div class="panel-body">
+<p>
+   A <b>Risk-Limiting Audit</b>, also sometimes referred to as the <em>result-conforming audit
+   </em>is a method of post-election audit designed such that the chances of detecting an error
+    in case of fraudulent election outcome is quite high just by examining a small sample of
+    the votes. The <b>Risk Limit</b> is the maximum probability that the audit will fail to
+    detect the error when it is present.
 </p>
 
 <p>
-  There are many methods for conducting risk-limiting audits.
-  This page performs calculations for a particularly simple method
-  described in <a href="http://statistics.berkeley.edu/~stark/Preprints/gentle12.pdf">AGI</a>,
-  a <em>ballot-polling audit</em>.
-</p>
-
-
-<p>
-   The expected sample size calculations for this method depend on the risk limit and the
-   reported margins; the expected sample size calculation
-   assumes that the reported margins are correct.
+  There are quite a many tools for performing risk-limiting audit, the prominent of them being the
+  Ballot Comparison Audit. Tools for performing that is present in the Stark's webpage titled
+  <b>Ballot Comparison Audit</b>.
 </p>
 
 <p>
-   Efficient risk-limiting audits generally count votes by hand until there is convincing
-   evidence that the outcome according to a full hand count would agree
-   with the outcome under audit.
-   If convincing evidence is not forthcoming, the audit progresses to a full hand count, which
-   is used to correct the outcome under audit if the two disagree.
+   Multi-level elections can be efficiently audited. The desired confidence level in the overall 
+   elections can be shared by individual constituencies. The product of the risk limits in the 
+   individual constituencies results in the overall risk limit. This is assuming that the election
+   outcome is correct in the audited constituencies. If during the audit any constituency shows a
+   fradulent outcome, then the risk limits to which the other constituencies have been audited must
+   to changed. 
 </p>
 
 <p>
-   The tools on this page help perform the following steps:
+    The tools on this page work as follows:
 </p>
 
 <ul>
-   <li>Choose a number of ballots to audit initially, on the assumption that the contest outcome is correct.</li>
-   <li>Select a random sample of ballots</li>
-   <li>Find those ballots using a ballot manifest</li>
-   <li>Determine whether the audit can stop, given the votes on the ballots in the sample.
-       If the audit cannot stop yet, estimate how many additional ballots will need to be audited</li>
+   <li>Choose the number of constituencies in the overall elections (In India, for eg. 543)</li>
+   <li>Select the number of parties contesting in the elections</li>
+   <li>Enter the contest name in the specified field.</li>
+   <li>Enter the candidate names in the specified fields and the number of seats won by that party.</li>
+   <li>In the Election Results table fill in the results for the respective constituencies.</li>
+   <li>Set the desired risk limit</li>
+   <li>Click on compute when you have successfully filled in all the fields.</li>
+   <li>Audit the constituencies simultaneously and update the table in case any constituency outcome is wrong
+       and hence recompute the risk limits.
+   </li>
 </ul>
-
-
-
-<h2>Initial sample size</h2>
-
-<p>
-   The initial sample size tool lets you enter the particulars of the contest(s) to be
-   audited as a group:
-   the total ballots cast across all the contests combined, and the vote totals for each
-   candidate in each contest.
-   The form helps you anticipate the number of randomly selected
-   ballots that might need to be inspected to attain a given limit on the risk,
-   under the assumption that the reported percentages for each candidate
-   are correct.
-   It is completely legitimate to sample one at a time and check whether enough have been
-   sampled using the &quot;stopping sample size tool,&quot; (later in this page) but this
-   form can help auditors anticipate how many ballots the audit is likely to require
-   and to retrieve ballots more efficiently, by reducing the number of times a given batch of
-   ballots is opened.
+  </div>
+</div>
 </p>
 
-<p>
-   Enter the total number of ballots cast in all contests to be audited.
-   Add candidates and contests as necessary until the results from all contests have been
-   entered.
-   Enter the desired risk limit.
-   Finally, click &quot;calculate&quot; to find the starting sample size.
-</p>
-
-
-
-<form action="#" method="get">
-        <fieldset>
-            <legend>Reported Election Parameters</legend>
-            <div>
-                <fieldset>
-                   <legend>Contest information</legend>
-                       <label for="nSeats">Total Number of Seats</label>
-                       <input type="number" size="10" name="nSeats" id="nSeats" value="0"/>&nbsp;&nbsp;<br>
-                       <label for="nCandi">Number of Parties:</label>
-                       <input type="text" size="10" name="nCandi" id="nCandi" />&nbsp;&nbsp;<br>
-                       <!--label for="nConsti">Number of Constituencies:</label>
-                       <input type="text" size="10" name="nConsti" id="nConsti" value="0" />&nbsp;&nbsp;<br-->
-                       <span class="label" id="theMargin">Smallest margin (seats): undefined. </span>
-                     <!--  <span class="label" id="theDilutedMargin">Diluted margin: undefined.</span> -->
-
-                       <div class="contestList"></div>
-                 <!--      <div class="addRemoveContest" id="addContest">
-                            <hr align="left">
-                            <input type="button" id="addContestButton" value="Add constituency"/>
-                            <input type="button" id="removeContestButton" value="Remove last constituency"/>
-                       </div>-->
-                <fieldset>
-                    <legend>Reported Election results</legend>
-                       <div class="overallTable"></div>
-                </fieldset>
-                </fieldset>
-                <fieldset>
-                   <legend>Audit parameters</legend>
-                       <label for="risk">Overall Risk limit:</label>
-                       <input type="text" size="10" name="risk" id="risk" value="10%" />
-                   <!--    <span class="label" id="asn">Expected sample size: undefined.</span>
-                       <span class="label" id="newRisk">New risk limit for winner's constituencies: undefined</span>-->
-                 </fieldset>
+<div class="panel panel-primary">
+  <div class="panel-heading">Risk Computing Tool</div>
+    <div class="panel-body">
+        <form action="#" method="get">
+            <div class="panel panel-default">
+                <div class="panel-heading">Contest Information</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                                <label for="nSeats">Total Number of Seats</label>
+                                <input class="form-control" placeholder="Number of Constituencies eg.543" type="number" min="0" size="10" name="nSeats" id="nSeats" value="0"/>&nbsp;&nbsp;<br>
+                                <label for="nCandi">Number of Parties:</label>
+                                <input class="form-control" placeholder="Number of Parties eg.10" value="0" type="number" min="0" size="10" name="nCandi" id="nCandi" />&nbsp;&nbsp;<br>
+                                <div class="contestList"></div>
+                                    
+                        </div>
+                    </div>
+                </div>
+            <div class="overallTable"></div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Audit parameters</div>
+                    <div class="panel-body">
+                        <label for="risk">Overall Risk limit:</label>
+                        <input class="form-control" type="text" size="10" name="risk" id="risk" value="10%" />
+                    </div>
             </div>
-        </fieldset>
-        <fieldset>
-            <legend>Risk-limits for various constituencies</legend>
-                <input type="button" value="Compute" onclick="findRisks()">
-                <div class="newRisks"></div>
-        </fieldset>
-</form>
+        </form>
+        <div class="panel panel-default">
+            <div class="panel-heading">Risk-limits for various constituencies</div>
+                <div class="panel-body">
+                    <button type="button" class="btn btn-success" onclick="findRisks()">Compute</button>
+                    <div class="newRisks"></div>
+                </div>
+        </div>
+    </div>
+</div>
 
-<p>
+
+
+<!--p>
    Taking a larger initial sample can avoid needing to expand the sample later,
    depending on the rate of ballots for each candidate in the sample.
    Avoiding &quot;escalation&quot; can make the audit less complicated.
@@ -1184,36 +1227,31 @@ var manifest = null;
    (If you experiment with different groupings of contests, be sure to change the entry for
    &quot;Ballots cast in all contests&quot; to reflect only the contests that are to be audited
    together.)
-</p>
+</p-->
 
 
 
 <p><a href="#" class="toggleStartingSampleNotes">Show technical notes.</a></p>
 <p class="startingSampleNotes notes">
-   The initial sample size form implements this formula from
-   <a href="https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf">BRAVO</a>:
+   Say the desired overall confidence level is $$ 1 - \epsilon $$
 </p>   
 <p class="startingSampleNotes notes">
-   $$ 
-      \mbox{ASN}_{w,\ell} \approx \frac {\ln(1/\alpha) + \ln(2s_w)/2}{ p_w \ln(2s_w) + p_\ell \ln(2 - 2s_w)},
-   $$
+    We can audit the constituency <em>i</em> in which the winner has won to confidence level 
+    $$1-\epsilon^{\alpha_i} $$.
 </p>
 <p class="startingSampleNotes notes">
-   where \(w\) is a candidate reported to have won, \(\ell\) is a candidate reported to have lost,
-   \(p_c\) is the fraction of votes for candidate \(c\) among all ballots,
-   including undervotes and invalid ballots, and
+   where \(\alpha_i\) is some constant between 0 and 1. A <em>flipset</em> is a set of constituencies
+   whose result when flipped will alter the election results. The \(\alpha_i\) must be such that
+   in any <em>flipset</em>, the sum of the \(\alpha_i\) of the constituencies must sum up to greater than
+   1. 
 </p>
 <p class="startingSampleNotes notes">
-   $$
-       s_c \equiv \frac{p_c}{\sum_j p_j}.
-   $$
-</p>
-<p class="startingSampleNotes notes">
-   The overall average sample number is the maximum of \(\mbox{ASN}_{w,\ell}\) over all
-   (winner, loser) pairs \((w, \ell)\).
-</p>
+    The cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is 
+    \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\). Our tool solves the Linear Program
+    of minimizing the total cost of auditing the constituencies in which the winner won subject to
+    the constraints that \(0<=\alpha_i<=1\) and for every minimal flipset, \(\sum \alpha_i >=1\).
 
-<h2>Random sampling</h2>
+<!--h2>Random sampling</h2>
 
 <p>
    The next tool helps generate a pseudo-random sample of ballots.
@@ -1538,15 +1576,14 @@ Provisional precinct 3, (995 999)
    The stopping rule implements the following formula from
    <a href="http://statistics.berkeley.edu/~stark/Preprints/gentle12.pdf">AGI</a>:
    FIX ME!
-</p>
+</p-->
 
 
 
 
 <p>
-<small>P.B. Stark, <a href="statistics.berkeley.edu/~stark">statistics.berkeley.edu/~stark</a>.
-http://statistics.berkeley.edu/~stark/Java/Html/ballotTools.htm
-Last modified 16 February 2017.</small>
+<small>Vanessa Teague, <a href="https://people.eng.unimelb.edu.au/vjteague/">https://people.eng.unimelb.edu.au/vjteague/</a>.
+Last modified 15 June 2017.</small>
 </p>
 
 </body>

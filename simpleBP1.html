@@ -5,8 +5,16 @@
       pref:renderer="css">
 
 <head>
-<link rel="shortcut icon" href="../Pics/vote.ico"/>
-<link rel="shortcut icon" href="../../Pics/vote.ico"/>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+<!-- Bootstrap -->
+<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="shortcut icon" href="./voteIcon.ico"/>
+<link rel="shortcut icon" href="./voteIcon.ico">
 <link rel="stylesheet" type="text/css" href="./pbsDefault.css"/>
 <link rel="stylesheet" type="text/css" href="./jquery-ui.min.css" />
 
@@ -24,7 +32,7 @@
 <script type="text/javascript" src="./jquery.flot.js"></script>
 <script type="text/javascript" src="./sha256.js"></script>
 <script type="text/javascript" src="./BigInt.js"></script>
-
+<script type="text/javascript"  src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
@@ -77,7 +85,7 @@
       $("#risk").change(function(){updateVotes();});
       $("#nextItem").click(function(){nextSample();});
       $("#reset").click(function(){resetMe();});
-      $("#voteForContest").change(function(){updateVotes();});
+      //$("#voteForContest").change(function(){updateVotes();});
       $("#showSequence").change(function(){writeList();});
       $("#showHash").change(function(){writeList();});
       $("#lookUpBallot").click(function(){
@@ -101,31 +109,17 @@
             winners.push([]);
             losers.push([]);
             var conStr = (candidates.length-1).toString();
-            var str = '<hr align="left" id="hrCon' + conStr + '"><div class="contest" id="contest' + conStr + '" contest="' + conStr + '">' +
-                      '<span class="label">Contest ' + candidates.length.toString() +
-                      '.&nbsp;&nbsp;</span>' +
-                      '<label for="contestName' + conStr + '">Contest name: </label>' +
-                      '<input type="text" size="80" id="contestName' + conStr + '" class="contestName" /><br />' +
-                      '<label for="voteForContest' + conStr +  '">Winners:&nbsp;</label>' +
-                      '<select id="voteForContest' + conStr + '" onchange="findMinMargin()">' +
-                         '<option value="1">1</option>' +
-                         '<option value="2">2</option>' +
-                         '<option value="3">3</option>' +
-                         '<option value="4">4</option>' +
-                         '<option value="5">5</option>' +
-                         '<option value="6">6</option>' +
-                         '<option value="7">7</option>' +
-                         '<option value="8">8</option>' +
-                         '<option value="9">9</option>' +
-                         '<option value="10">10</option>' +
-                      '</select><p><span class="label">Reported votes:</span></p></div><br />' +
+            var str = '<hr align="left" id="hrCon' + conStr + '"><div class="form-group" id="contest' + conStr + '" contest="' + conStr + '">' +
+                      '<label for="contestName' + conStr + '">Contest Name: </label>' +
+                      '<input class="form-control" type="text" size="80" placeholder="Contest" id="contestName' + conStr + '" class="contestName" /><br />' +
+                      '<p><span class="label">Reported Votes:</span></p></div><br />' +
                       '<div class="addCandidate" id="addCandidate' + conStr + '" contest="' + conStr + '">' +
-                      '<input type="button" id="addCandidateButton' + conStr +
-                      '" value="Add candidate to contest ' + candidates.length.toString() +
-                      '" contest="' + conStr + '"/>' +
-                      '<input type="button" id="removeCandidateButton' + conStr +
-                      '" value="Remove last candidate from contest ' + candidates.length.toString() +
-                      '" contest="' + conStr + '"/></div>';
+                      '<button class="btn btn-success" type="button" id="addCandidateButton' + conStr +
+                      '" value="Add Candidate' +
+                      '" contest="' + conStr + '">Add Candidate</button>&nbsp;&nbsp;' +
+                      '<button class="btn btn-danger" type="button" id="removeCandidateButton' + conStr +
+                      '" value="Remove Last Candidate' +
+                      '" contest="' + conStr + '">Remove Last Candidate</button></div>';
             $(".contestList").append(str);
             $("#contest" + (candidates.length-1).toString()).append(addCandidate(candidates.length-1));
             $("#contest" + (candidates.length-1).toString()).append(addCandidate(candidates.length-1));
@@ -154,41 +148,42 @@
         function addCandidate(contest) {  // adds a candidate to the most recently added contest
             candidates[contest].push(0);
             var theCandidate = (parseInt(contest)+1).toString() + '_' + candidates[contest].length.toString();
-            return('<div class="candidate contest' + (parseInt(contest)+1).toString() + '" ' +
+            return('<form class="form-inline"><div class="candidate contest' + (parseInt(contest)+1).toString() + '" ' +
                    'id="candidate_' +  theCandidate + '">' +
                    '<label for="name' + theCandidate + '">Candidate ' + candidates[contest].length +  ' Name: </label> ' +
-                   '<input type="text" size="40" id="name' + theCandidate + '" onblur="names[' + contest + '][' +
+                   '<input class="form-control" type="text" value="Candidate '+ candidates[contest].length.toString()+'" size="40" id="name' + theCandidate + '" onblur="names[' + contest + '][' +
                       (candidates[contest].length-1) + ']=this.value;" />' +
                    '<label for="nBallots' + theCandidate + '">&nbsp;&nbsp;Votes: ' + '</label>' +
-                   '<input type="text" size="10" id="nBallots' + theCandidate + '" onblur="updateVotes()"/></div>');
+                   '<input class="form-control" type="number" value="0" min="0" size="10" id="nBallots' + theCandidate + '" onblur="updateVotes()"/></div></form>');
         }
         function buildTestMatrix() {
             /*   Builds the matrix of test statistics and populates the Wald factor matrix.
                 Assumes that winners[] and losers[] have been populated.
             */
             var str = '<div class="testStatistic" id="testStatistic" >' +
-                      '<table id="testMatrix"><tbody></tbody></table></div>';
+                      '<table class="table table-nonfluid" id="testMatrix"><tbody></tbody></table></div>';
             $(".testTable").empty();
             $(".testTable").append(str);
             str = '';
+            str += '<tr><th>Audited Votes</th>';
             for (var i=0; i < candidates.length; i++) {
-                str += '<tr><th class="voteRow" colspan="' + (winners[i].length+1) +
-                       '" id="sizeSoFar_' + i + '">Audited votes for ' + $("#contestName" + i).val() +
-                       ': 0</span></th></tr>' +
-                       '<tr><th></th>';
                 for (var W=0; W < winners[i].length; W++) {
-                    str += '<th id="Twinner_' + i + '_' + winners[i][W] + '">' + names[i][winners[i][W]] +
+                    str += '<th class="info" id="Twinner_' + i + '_' + winners[i][W] + '">' + names[i][winners[i][W]] +
                             '&nbsp;<input type="text" class="voteSpinner" id="votes_for_' + i + '_' + winners[i][W] +
                             '" value="0" /></th>';
                 }
                 str += '</tr>';
-                for (var L=0; L < losers[i].length; L++) {
-                    str += '<tr id="Tloser_'  + i + '_' + losers[i][L] + '"><th>' + names[i][losers[i][L]] +
+                str += '<tr id="Tloser_'  + i + '_' + losers[0][0] + '"><th class="info">' + names[0][losers[0][0]] +
+                           '&nbsp;<input type="text" class="voteSpinner" id="votes_for_' + i + '_' + losers[0][0] +
+                           '" value="0" /></th>';
+                str += '<td id="T_' + [i, losers[0][0], winners[0][0]].join('_') + '">1</td>';
+                for (var L=1; L < losers[i].length; L++) {
+                    str += '<tr id="Tloser_'  + i + '_' + losers[i][L] + '"><th class="info">' + names[i][losers[i][L]] +
                            '&nbsp;<input type="text" class="voteSpinner" id="votes_for_' + i + '_' + losers[i][L] +
                            '" value="0" /></th>';
-                    for (var W=0; W < winners[i].length; W++) {
+                    /*for (var W=0; W < winners[i].length; W++) {
                         str += '<td id="T_' + [i, losers[i][L], winners[i][W]].join('_') + '">1</td>';
-                    }
+                    }*/
                     str += '</tr>';
                 }
             }
@@ -335,7 +330,7 @@
         try {
             asn = 0;
             for (var i=0; i < candidates.length; i++) {
-                var cani = parseInt($("#voteForContest" + i.toString()).val()); //Number of winners
+                var cani = 1; //Number of winners
                 if (candidates[i].length < cani ) { // not enough candidates
                     opsOk = false;
                 }
@@ -378,24 +373,24 @@
         if (!opsOk | isNaN(minMargin)) {
             minMargin = 'undefined';
             asn = 'undefined';
-            $("#theDilutedMargin").text('Diluted margin: undefined.');
-            $("#theMargin").text('Smallest margin (votes): undefined.');
-            $("#asn").text('Expected sample size: undefined.');
+            $("#theDilutedMargin").text('Diluted margin: undefined');
+            $("#theMargin").text('Smallest margin (votes): undefined');
+            $("#asn").text('Expected sample size: undefined');
         } else {
-            $("#theMargin").text('Smallest margin (votes): ' + commify(minMargin) + '. ');
-            $("#theDilutedMargin").text(' Diluted margin: ' + commify(doubleToStr(100*minMargin/ballots,2)) + '%. ');
-            $("#asn").text('Expected sample size: ' + commify(asn) + '. ');
+            $("#theMargin").text('Smallest margin (votes): ' + commify(minMargin) + '');
+            $("#theDilutedMargin").text(' Diluted margin: ' + commify(doubleToStr(100*minMargin/ballots,2)) + '%');
+            $("#asn").text('Expected sample size: ' + commify(asn) + '');
             buildTestMatrix();
         }
         if (!(opsOk & votesOk & ballOk)) {
             try {
                 for (var i=0; i < candidates.length; i++) {
-                    var vf = parseInt($("#voteForContest" + i.toString()).val());
+                    var vf = 1;
                     if (candidates[i].length <  vf ) {
-                        throw 'Fewer candidates than voting opportunities in contest ' + (i+1).toString() + '!';
+                        throw 'Fewer candidates than voting opportunities in contest!';
                     }
                     if (vSum(candidates[i]) > vf*ballots) {
-                        throw 'More votes than voting opportunities in contest ' + (i+1).toString() + '!';
+                        throw 'More votes than voting opportunities in contest!';
                     }
                 }
             } catch(e) {
@@ -428,7 +423,7 @@
     }
     function updateVotes() {
         clearSampleSizes();
-        findMinMargin();
+        //findMinMargin();
         return(true);
     }
     function clearSampleSizes() {
@@ -700,7 +695,7 @@ var manifest = null;
 // -->
 </script>
 
-<title>Tools for Simple Ballot Polling Audits</title>
+<title>Simple Ballot Polling Audit for India</title>
 
 </head>
 
@@ -708,541 +703,591 @@ var manifest = null;
 
 </head>
 <div id="bodyDiv">
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Home</a>
+    </div>
 
-<h1>
-   Tools for Simple Ballot Polling Audits
-</h1>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#">Efficient Auditing of Indian Elections<span class="sr-only">(current)</span></a></li>
+        </ul>
+        <ul class="nav navbar-nav">
+        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/auditTools.htm">Stark's Ballot Comparison Audit</a></li></ul>
+        <ul class="nav navbar-nav">
+        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm">Stark's Ballot Polling Audit</a></li></ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Developers</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 
-<p>
-   This page implements some tools to conduct &quot;simple ballot-polling&quot; risk-limiting audits as described in
-   <a href="http://statistics.berkeley.edu/~stark/Preprints/gentle12.pdf">A Gentle Introduction to
-   Risk-Limiting Audits</a> (AGI), by Lindeman and Stark, and
-   <a href="https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf">
-   BRAVO: Ballot-polling Risk-limiting Audits to Verify Outcomes</a>, by Lindeman, Stark, and Yates.
-   For an implementation of tools for &quot;comparison&quot; risk-limiting audits as described in AGI, see
-   <a href="./auditTools.htm">http://statistics.berkeley.edu/~stark/Vote/auditTools.htm</a>.
-</p>
+<div>
 
-<p id="hideAll">
-  To hide or show everything but the tools, <a href="#" id="hideAllProse">click this link</a>.
-</p>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#theory" aria-controls="theory" role="tab" data-toggle="tab">Theory</a></li>
+    <li role="presentation"><a href="#contest" aria-controls="contest" role="tab" data-toggle="tab">Contest Details</a></li>
+    <li role="presentation"><a href="#sampling" aria-controls="sampling" role="tab" data-toggle="tab">Random Sampling</a></li>
+    <li role="presentation"><a href="#lookup" aria-controls="lookup" role="tab" data-toggle="tab">Ballot Look-up</a></li>
+    <li role="presentation"><a href="#wald" aria-controls="wald" role="tab" data-toggle="tab">Audit Progress Tool</a></li>
+  </ul>
 
-<p>
-   A <em>risk-limiting audit</em> is a procedure that is guaranteed to have a large chance
-   of progressing to a full hand count of the votes if the electoral outcome is wrong.
-   The outcome according to the hand count then replaces the outcome being audited.
-   The <em>risk limit</em> is the maximum chance that the audit will not progress
-   to a full hand count if the electoral outcome is incorrect, no matter why it is
-   incorrect&mdash;whether because of voter error, bugs, pollworker error, or
-   deliberate fraud&mdash;provided the audit trail is complete and accurate.
-</p>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="theory">
+            <h1>
+                <center>Simple Ballot Polling Audit for India</center>
+            </h1>
 
-<p>
-  There are many methods for conducting risk-limiting audits.
-  This page performs calculations for a particularly simple method
-  described in <a href="http://statistics.berkeley.edu/~stark/Preprints/gentle12.pdf">AGI</a>,
-  a <em>ballot-polling audit</em>.
-</p>
+        <p>
+        This page implements some tools to conduct <b>Simple Ballot-Polling</b> risk-limiting audits as described in
+        <a href="#">Auditing of Indian Elections</a>, by Mohanty, Vanessa et.al.
+        
+        For the previous versions of <b>Ballot Polling</b> risk-limiting audit go to Philip Stark's page
+        using the navbar on the top.
 
+        For an implementation of tools for <b>Ballot Comparison</b> risk-limiting audits navigate to 
+        Philip Stark's webpage titled "Ballot Comparison Audit".
+        </p>
 
-<p>
-   The expected sample size calculations for this method depend on the risk limit and the
-   reported margins; the expected sample size calculation
-   assumes that the reported margins are correct.
-</p>
+        <!--p id="hideAll">
+        To hide or show everything but the tools <button type="button" class="btn btn-default" id="hideAllProse">Click Here</button>
+        </p-->
+        <div class="panel panel-primary">
+            <div class="panel-heading">Theory</div>
+            <div class="panel-body">
 
-<p>
-   Efficient risk-limiting audits generally count votes by hand until there is convincing
-   evidence that the outcome according to a full hand count would agree
-   with the outcome under audit.
-   If convincing evidence is not forthcoming, the audit progresses to a full hand count, which
-   is used to correct the outcome under audit if the two disagree.
-</p>
+                <p>
+                A <b>Risk-Limiting Audit</b>, also sometimes referred to as the <em>result-conforming audit
+                </em>is a method of post-election audit designed such that the chances of detecting an error
+                    in case of fraudulent election outcome is quite high just by examining a small sample of
+                    the votes. The <b>Risk Limit</b> is the maximum probability that the audit will fail to
+                    detect the error when it is present.
+                </p>
 
-<p>
-   The tools on this page help perform the following steps:
-</p>
-
-<ul>
-   <li>Choose a number of ballots to audit initially, on the assumption that the contest outcome is correct.</li>
-   <li>Select a random sample of ballots</li>
-   <li>Find those ballots using a ballot manifest</li>
-   <li>Determine whether the audit can stop, given the votes on the ballots in the sample.
-       If the audit cannot stop yet, estimate how many additional ballots will need to be audited</li>
-</ul>
-
-
-
-<h2>Initial sample size</h2>
-
-<p>
-   The initial sample size tool lets you enter the particulars of the contest(s) to be
-   audited as a group:
-   the total ballots cast across all the contests combined, and the vote totals for each
-   candidate in each contest.
-   The form helps you anticipate the number of randomly selected
-   ballots that might need to be inspected to attain a given limit on the risk,
-   under the assumption that the reported percentages for each candidate
-   are correct.
-   It is completely legitimate to sample one at a time and check whether enough have been
-   sampled using the &quot;stopping sample size tool,&quot; (later in this page) but this
-   form can help auditors anticipate how many ballots the audit is likely to require
-   and to retrieve ballots more efficiently, by reducing the number of times a given batch of
-   ballots is opened.
-</p>
-
-<p>
-   Enter the total number of ballots cast in all contests to be audited.
-   Add candidates and contests as necessary until the results from all contests have been
-   entered.
-   Enter the desired risk limit.
-   Finally, click &quot;calculate&quot; to find the starting sample size.
-</p>
+                <p>
+                There are quite a many tools for performing risk-limiting audit, the prominent of them being the
+                Ballot Polling and the Ballot Comparison Audit. This page implemenets the tools for performing 
+                Ballot Polling Audit in a simpler manner. The original Ballot Polling audit as implemented by 
+                Philip Stark can be found on his webpage. Stark has also developed tools for <b>Ballot Comparison Audit</b>
+                which can be reached using the navigation links on the top of the page.
+                </p>
 
 
+                <p>
+                The expected sample size calculations for this method depend on the risk limit and the
+                reported margins; the expected sample size calculation
+                assumes that the reported margins are correct.
+                </p>
 
-<form action="#" method="get">
-        <fieldset>
-            <legend>Initial sample size</legend>
-            <div>
-                <fieldset>
-                   <legend>Contest information</legend>
-                       <label for="nBallots">Ballots cast in all precincts:</label>
-                       <input type="text" size="10" name="nBallots" id="nBallots" />&nbsp;&nbsp;
-                       <span class="label" id="theMargin">Smallest margin (votes): undefined. </span>
-                       <span class="label" id="theDilutedMargin">Diluted margin: undefined.</span>
+                <p>
+                Risk limiting audit the ballots at random using a random number generator. If the random sample gives
+                sufficient evidence that the election outcome is correct then the audit stops. Else if convincing evidence 
+                is not attained, we keep auditing the ballots until we have audited all the ballots, in which case the 
+                exact election outcome is known to us. This is based on the assumption that the manual auditing represents
+                the ground truth and is error-free. 
+                </p>
 
-                       <div class="contestList"></div>
-                     <!--  <div class="addRemoveContest" id="addContest">
-                            <hr align="left">
-                            <input type="button" id="addContestButton" value="Add contest"/>
-                            <input type="button" id="removeContestButton" value="Remove last contest"/>
-                       </div>--> 
-                </fieldset>
-                <fieldset>
-                   <legend>Audit parameters</legend>
-                       <label for="risk">Risk limit:</label>
-                       <input type="text" size="10" name="risk" id="risk" value="10%" />
-                       <span class="label" id="asn">Expected sample size: undefined.</span>
-                 </fieldset>
+                <p>
+                The tools on this webpage have been divided into sections depending upon their usage. The following lists the
+                tools and their utility in the audit process.
+                </p>
+
+                <ul>
+                <li><b>Contest Details: </b> In this you have to fill in the information about the contest which will help in
+                interpreting the results.  </li>
+                <li><b>Random Sampling: </b>This helps you to generate a random sequence of numbers which
+                tell the sequence in which the ballots should be audited.</li>
+                <li><b>Ballot Look-up: </b>Find those ballots using a ballot manifest</li>
+                <li><b>Wald's Probability Ratio Test: </b>Determine whether the audit can stop, given the votes on the ballots in the sample.</li>
+                </ul>
+
+
             </div>
-        </fieldset>
-</form>
+        </div>
+    </div>
 
-<p>
-   Taking a larger initial sample can avoid needing to expand the sample later,
-   depending on the rate of ballots for each candidate in the sample.
-   Avoiding &quot;escalation&quot; can make the audit less complicated.
-</p>
+    <div role="tabpanel" class="tab-pane" id="contest">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Initial sample size</div>
+            <div class="panel-body">
+                <p>
+                The initial sample size tool lets you enter the particulars of the contest to be
+                audited, the total ballots cast in the contest, and the vote totals for each
+                candidate in the contest.
+                The form helps you anticipate the number of randomly selected
+                ballots that might need to be inspected to attain a given limit on the risk,
+                under the assumption that the reported percentages for each candidate
+                are correct.
+                It is completely legitimate to sample one at a time and check whether enough have been
+                sampled using the <b>Audit Progress Tool</b> but this
+                form can help auditors anticipate how many ballots the audit is likely to require
+                and to retrieve ballots more efficiently, by reducing the number of times a given batch of
+                ballots is opened.
+                </p>
 
-<h3 id="considerations">Considerations for deciding which contests to audit together</h3>
+                <p>
+                Enter the details in the form as per the following guidelines.
+                <ul>
+                    <li>Enter the total number of ballots cast in the contest.</li>
+                    <li>Specify the name of the contest.</li>
+                    <li>Add or remove the required number of candidates using the appropriate buttons.</li>
+                    <li>Enter the candidate name and the reported number of votes secured by him/her in the contest.</li>
+                    <li>Specify the risk-limit to which to audit the contest.
+                </ul>
+                </p>
 
-<p>
-   The number of ballots the audit must examine before stopping depends on the smallest
-   diluted margin among the contests to be audited together (as well as the risk limit,
-   the errors the audit finds, and so on).
-   All else equal, the larger the diluted margin is, the smaller the sample size needs to be.
-</p>
-
-<p>
-   Because the diluted margin is the smallest margin in votes divided by the total number of
-   ballots cast in all the contests under audit,
-   auditing small contests together with large contests can be inefficient:
-   Dividing the vote margin in small contests by the number of ballots cast in large contests
-   can make the diluted margin very small, which makes the required sample very large.
-</p>
-
-<p>
-   Generally, if two contests overlap substantially&mdash;for instance, if both are jurisdiction-wide
-   contests&mdash;it is more economical
-   to audit them together:  Fewer ballots will need to be inspected in all.
-   Conversely, if two contests do not overlap at all, it is more efficient to audit them separately.
-</p>
-
-
-<p>
-   Auditing small contests together with (overlapping) large contests generally is not efficient unless the
-   vote margin in the small contests is a substantial fraction of the vote margin in the large
-   contests.
-   That is, auditing small contests that have large percentage margins together with large contests that
-   have small percentage margins
-   can be efficient, but auditing small contests together with large contests
-   that have comparable vote margins generally is not efficient, because it makes the
-   diluted margin of the combination much smaller.
-</p>
-
-<p>
-   The tool above can be used to explore whether it makes sense to audit a collection of contests
-   together by checking whether the expected sample size when they are audited
-   together is greater than the sum of the expected sample sizes when they are audited
-   separately.
-   (If you experiment with different groupings of contests, be sure to change the entry for
-   &quot;Ballots cast in all contests&quot; to reflect only the contests that are to be audited
-   together.)
-</p>
-
-
-
-<p><a href="#" class="toggleStartingSampleNotes">Show technical notes.</a></p>
-<p class="startingSampleNotes notes">
-   The initial sample size form implements this formula from
-   <a href="https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf">BRAVO</a>:
-</p>   
-<p class="startingSampleNotes notes">
-   $$ 
-      \mbox{ASN}_{w,\ell} \approx \frac {\ln(1/\alpha) + \ln(2s_w)/2}{ p_w \ln(2s_w) + p_\ell \ln(2 - 2s_w)},
-   $$
-</p>
-<p class="startingSampleNotes notes">
-   where \(w\) is a candidate reported to have won, \(\ell\) is a candidate reported to have lost,
-   \(p_c\) is the fraction of votes for candidate \(c\) among all ballots,
-   including undervotes and invalid ballots, and
-</p>
-<p class="startingSampleNotes notes">
-   $$
-       s_c \equiv \frac{p_c}{\sum_j p_j}.
-   $$
-</p>
-<p class="startingSampleNotes notes">
-   The overall average sample number is the maximum of \(\mbox{ASN}_{w,\ell}\) over all
-   (winner, loser) pairs \((w, \ell)\).
-</p>
-
-<h2>Random sampling</h2>
-
-<p>
-   The next tool helps generate a pseudo-random sample of ballots.
-   To start,
-   input a random seed with at least 20 digits (generated by rolling a 10-sided die, for instance),
-   the number of ballots from which you want a sample, and the number of ballots you want in the sample.
-   Further below, there is a form to help find the individual, randomly selected
-   ballots among the batches in which ballots are stored.
-</p>
-
-    <form action="#" method="get">
-        <fieldset>
-            <legend>Pseudo-Random Sample of Ballots</legend>
-            <div>
-                <label for="seedValue">Seed:</label>
-                <input type="text" size="25" name="seedValue" id="seedValue" onblur="clearList();"
-                       value="Input seed here" />
+                <p>
+                Once you are done filling up all the details, kindly proceed to the next tab to find the random
+                sample of ballots to be audited.
+                </p>
             </div>
-            <div>
-                <label for="nObj">Number of ballots:</label>
-                <input type="text" size="10" name="nObj" id="nObj" onblur="clearList();" value="1000"/>
+        </div>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">Contest Information</div>
+            <div class="panel-body">
+                <form action="#" method="get">
+                        <div class="form-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Contest information</div>
+                                <div class="panel-body">
+                                    <label for="nBallots">Ballots cast in all precincts:</label>
+                                    <input class="form-control" type="number" min="0" value="0" size="10" name="nBallots" id="nBallots" />&nbsp;&nbsp;
+                                    <span class="label label-default" id="theMargin">Smallest margin (votes): undefined </span>&nbsp;&nbsp;
+                                    <span class="label label-default" id="theDilutedMargin">Diluted margin: undefined</span>
+                                    <div class="contestList"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Audit parameters</div>
+                                <div class="panel-body">
+                                    <label for="risk">Risk limit:</label>
+                                    <input class="form-control" type="text" size="10" name="risk" id="risk" value="10%" />
+                                    <span class="label label-default" id="asn">Expected sample size: undefined</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                </form>
             </div>
-            <div>
-                 <label for="samNum">Current sample number:</label>
-                 <input type="text" size="10" name="samNum" id="samNum" editable="false" value="1"/>
-                 <br />
-                 <label for="samMany">Draw this many ballots:</label>
-                 <input type="text" size="10" name="samMany" id="samMany" value="1"/>
-                 <input type="button" name="nextItem" id="nextItem" value="draw sample" />
-                 <input type="button" name="reset" id="reset" value="reset" />
+        </div>
+
+        <!--div class="panel panel-info">
+            <div class="panel-heading">Considerations for deciding which contests to audit together</div>
+            <div class="panel-body">
+                <p>
+                Taking a larger initial sample can avoid needing to expand the sample later,
+                depending on the rate of ballots for each candidate in the sample.
+                Avoiding &quot;escalation&quot; can make the audit less complicated.
+                </p>
+                <p>
+                The number of ballots the audit must examine before stopping depends on the smallest
+                diluted margin among the contests to be audited together (as well as the risk limit,
+                the errors the audit finds, and so on).
+                All else equal, the larger the diluted margin is, the smaller the sample size needs to be.
+                </p>
+
+                <p>
+                Because the diluted margin is the smallest margin in votes divided by the total number of
+                ballots cast in all the contests under audit,
+                auditing small contests together with large contests can be inefficient:
+                Dividing the vote margin in small contests by the number of ballots cast in large contests
+                can make the diluted margin very small, which makes the required sample very large.
+                </p>
+
+                <p>
+                Generally, if two contests overlap substantially&mdash;for instance, if both are jurisdiction-wide
+                contests&mdash;it is more economical
+                to audit them together:  Fewer ballots will need to be inspected in all.
+                Conversely, if two contests do not overlap at all, it is more efficient to audit them separately.
+                </p>
+
+
+                <p>
+                Auditing small contests together with (overlapping) large contests generally is not efficient unless the
+                vote margin in the small contests is a substantial fraction of the vote margin in the large
+                contests.
+                That is, auditing small contests that have large percentage margins together with large contests that
+                have small percentage margins
+                can be efficient, but auditing small contests together with large contests
+                that have comparable vote margins generally is not efficient, because it makes the
+                diluted margin of the combination much smaller.
+                </p>
+
+                <p>
+                The tool above can be used to explore whether it makes sense to audit a collection of contests
+                together by checking whether the expected sample size when they are audited
+                together is greater than the sum of the expected sample sizes when they are audited
+                separately.
+                (If you experiment with different groupings of contests, be sure to change the entry for
+                &quot;Ballots cast in all contests&quot; to reflect only the contests that are to be audited
+                together.)
+                </p>
             </div>
-            <br />
-            <div>
-               <label for="list">Ballots selected:</label>
-               <input type="checkbox" name="showSequence" id="showSequence" value="showSequence" checked />
-               <label for="showSequence">show sequence numbers</label>
+        </div-->
+        <p><a href="#" class="toggleStartingSampleNotes">Show technical notes.</a></p>
+        <p class="startingSampleNotes notes">
+        The initial sample size form implements this formula from <a href="#">AIE</a>:
+        </p>   
+        <p class="startingSampleNotes notes">
+        $$ 
+            \mbox{ASN} \approx \frac {\ln(1/\alpha)}{ p_w \ln(\frac{p_w\ast (2-p_w-p_r)}{(p_w+p_r)\ast (1-p_w)}) + \ln(\frac{2 - 2p_w}{1-p_w-p_r})},
+        $$
+        </p>
+        <p class="startingSampleNotes notes">
+        where \(w\) is a candidate reported to have won, \(r\) is the  runner-up candidate and
+        \(p_w\) and \(p_r\) are the percentage of votes won by the winner and the 
+        runner-up respectively.
+       
+    </div>
 
-               <input type="checkbox" name="showHash" id="showHash" value="showHash" />
-               <label for="showHash">show hash values</label>
-               <br />
-               <textarea rows="10" cols="80" name="list" id="list" readonly="readonly"></textarea>
+    <div role="tabpanel" class="tab-pane" id="sampling">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Random sampling</div>
+            <div class="panel-body">
+                <p>
+                This tool helps generate a pseudo-random sample of ballots.
+                To start,
+                input a random seed with at least 20 digits (generated by rolling a 10-sided die, for instance),
+                the number of ballots from which you want a sample, and the number of ballots you want in the sample.
+                Further below, there is a form to help find the individual, randomly selected
+                ballots among the batches in which ballots are stored.
+                </p>
+
+                    <form action="#" method="get">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Pseudo-Random Sample of Ballots</div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="seedValue">Seed:</label>
+                                    <input class="form-control" type="text" size="25" name="seedValue" id="seedValue" onblur="clearList();"
+                                        placeholder="Input seed here" />
+
+                                    <label for="nObj">Number of ballots:</label>
+                                    <input class="form-control" type="number" min="0" size="10" name="nObj" id="nObj" onblur="clearList();" value="1000"/>
+
+                                    <label for="samNum">Current sample number:</label>
+                                    <input class="form-control"type="number" size="10" name="samNum" id="samNum" editable="false" value="1"/>
+
+                                    <label for="samMany">Draw these many ballots:</label>
+                                    <input class="form-control" type="number" min="0" size="10" name="samMany" id="samMany" value="1"/>
+                                    <br>
+                                    <button type="button" class="btn btn-success" name="nextItem" id="nextItem" value="draw sample">Draw Sample</button>
+                                    &nbsp; &nbsp;
+                                    <button type="button" class="btn btn-danger" name="reset" id="reset" value="reset" >Reset</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                </form>
+                <form> 
+                    <div class="panel panel-default">
+                        <div class="panel-heading" for="list">Ballots selected:</div>
+                        <div class="panel-body">
+                            <input type="checkbox" name="showSequence" id="showSequence" value="showSequence" checked />
+                            <label for="showSequence">show sequence numbers</label>
+                            <input type="checkbox" name="showHash" id="showHash" value="showHash" />
+                            <label for="showHash">show hash values</label>
+                            <textarea class="form-control" rows="10" cols="80" name="list" id="list" readonly="readonly"></textarea>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading" for="sortedList">Ballots selected, sorted:</div>
+                        <div class="panel-body">
+                            <textarea class="form-control" rows="10" cols="80" name="sortedList" id="sortedList" readonly="readonly"></textarea>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading" for="sortedDedupeList">Ballots selected, sorted, duplicates removed:</div>
+                        <div class="panel-body">
+                            <textarea class="form-control" rows="10" cols="80" name="sortedDedupeList" id="sortedDedupeList" readonly="readonly"></textarea>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading" for="duplicates">Repeated Ballots:</div>
+                        <div class="panel-body">
+                            <textarea class="form-control" rows="10" cols="80" name="duplicates" id="duplicates" readonly="readonly"></textarea>
+                        </div>
+                    </div>
+                </form>
+                <p>
+                <a href="#" class="toggleRandomSampleNotes">Show technical notes.</a>
+                </p>
+
+                <p class="randomSampleNotes notes">
+                The &quot;seed,&quot; concatenated with a comma and the &quot;Sample number,&quot; is passed through the
+                SHA-256 hash function.
+                The result is displayed as &quot;Hashed value (for testing)&quot;.
+                The hashed value, interpreted as a hexadecimal number, is divided by
+                &quot;Number of objects from which to sample.&quot;
+                One is added to the remainder of that division to get &quot;Randomly selected item,&quot;
+                which will be a number between 1 and &quot;Number of objects from which to sample,&quot; inclusive.
+                Clicking &quot;draw sample&quot; successively adds one to &quot;Sample number&quot; and
+                recomputes &quot;Hashed value&quot; and &quot;Randomly selected item&quot;
+                &quot;Draw this many objects&quot; times.
+                Selected items accumulate in &quot;Ballots selected&quot; (and &quot;Ballots selected, sorted&quot;),
+                which reset if the seed or the number of objects changes.
+                The same ballot might be selected more than once.
+                Duplicates are removed in
+                &quot;Ballots selected, duplicates removed.&quot;
+                Ballots selected more than once, and the frequencies of those ballots, are in
+                &quot;Repeated ballots.&quot;
+                Clicking the &quot;reset&quot; button clears the history but leaves the seed.
+                </p>
+
+                <p class="randomSampleNotes notes">
+                This tool was developed in Javascript by Philip Stark and his collaborators.
+
+                <p class="randomSampleNotes notes">
+                    For more detail, see
+                <a href="http://statistics.berkeley.edu/~stark/Java/Html/sha256Rand.htm">http://statistics.berkeley.edu/~stark/Java/Html/sha256Rand.htm</a>.
+                </p>
             </div>
-            <div>
-               <label for="sortedList">Ballots selected, sorted:</label><br />
-               <textarea rows="10" cols="80" name="sortedList" id="sortedList" readonly="readonly"></textarea>
+        </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="lookup">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Find ballots using a ballot manifest</div>
+            <div class="panel-body">
+                <p>
+                Generally, ballots will be stored in batches, for instance, separated by booth from which they were collected.
+                To make it easier to find individual ballots, it helps to have a <em>ballot manifest</em>
+                that describes how the ballots are stored.
+                For instance, we might have 1,000 ballots stored as follows:
+                </p>
+
+                <center>
+                    <table class="table table-nonfluid table-bordered">
+                    <tr class="info">
+                        <th class="col-md-6">Batch Label</th><th class="col-md-6">Ballots</th>
+                    </tr>
+                    <tr>
+                        <td>Polling place booth 1</td> <td>130</td>
+                    </tr>
+                        <td>Polling place booth 2</td>  <td>172</td>
+                    </tr>
+                    <tr>
+                        <td>Polling place booth 3</td> <td>112</td>
+                    </tr>
+                        <td>Polling place booth 4</td>  <td>201</td>
+                    </tr>
+                    <tr>
+                        <td>Polling place booth 5</td> <td>197</td>
+                    </tr>
+                        <td>Polling place booth 5</td>  <td>188</td>
+                    </tr>
+                    </table>
+                </center>
+
+
+                <p>
+                If ballot 500 is selected for audit, which ballot is that?
+                If we take the listing of batches in the order given by the manifest, and we
+                require that within each batch, the ballots are in an order that does not
+                change during the audit, then the 500th ballot is the 86th ballot among the 
+                for ballots for polling place booth 4:
+                The first three batches have a total of 130+172+112 = 414 ballots.
+                The first ballot in the fourth batch is ballot 415.
+                Ballot 500 is the 86th ballot in the fourth batch.
+                </p>
+
+                <p>
+                The ballot look-up tool transforms a list of ballot numbers and a ballot manifest
+                into a list of ballots in each batch.
+                Batch labels should not contain commas.
+                Use a comma to separate each batch label from the number of ballots in that batch
+                (or the range of ballot numbers or the set of ballot identifiers as depicted below).
+                The manifest should have one line per batch and no empty lines.
+                </p>
+
+                <p>
+                For instance, to input the ballot manifest above, you would enter:
+                </p>
+
+                <p>
+                <pre>
+                Polling place booth 1, 130
+                Polling place booth 2, 172
+                Polling place booth 3, 112
+                Polling place booth 4, 201
+                Polling place booth 5, 197
+                Polling place booth 6, 188
+                </pre>
+                </p>
+
+                <p>
+                If all the ballots in the election are numbered sequentially, you may want to specify
+                the range of ballots which come from a given polling booth. Also in case of any Provisional
+                votes, they can be specified individually for a polling booth. Consider the following table.
+                <!--p>
+                Some jurisdictions number the ballots cast in an election.
+                If all the ballots in an election are numbered sequentially, the numbers on the ballots that contain
+                a particular contest might not be sequential.
+                For instance, an election might cover precincts 1, 2, and 3, but
+                only voters in precincts 1 and 3 are eligible to vote in the contests to be audited with the current sample.
+                In the previous example, suppose that the jurisdiction had stamped numbers on all the ballots, sequentially, so that
+                the ballots from the polling place in booth 1 were numbered 1 to 130, the vote by mail ballots from booth 1 were
+                numbered 131 to 302, the ballots from the polling place in booth 2 were numbered 303 to 414, and so on,
+                as summarized in the following table:
+                </p-->
+
+                <center>
+                    <table class="table table-nonfluid table-bordered">
+                    <tr class="info">
+                        <th>Batch label</th><th>Ballot Range</th>
+                    </tr>
+                    <tr>
+                        <td>Polling place booth 1</td> <td>1 to 130</td>
+                    </tr>
+                        <td>Polling place booth 2</td>  <td>131 to 302</td>
+                    </tr>
+                    <tr>
+                        <td>Polling place booth 3</td> <td>303 to 414</td>
+                    </tr>
+                        <td>Polling place booth 4</td>  <td>415 to 615</td>
+                    </tr>
+                    <tr>
+                        <td>Polling place booth 5</td> <td>616 to 812</td>
+                    </tr>
+                        <td>Polling place booth 6</td>  <td>813 to 994</td>
+                    </tr>
+                    <tr>
+                        <td>Provisional ballots for booth 1</td> <td>996, 998, 1000</td>
+                    </tr>
+                    <tr>
+                        <td>Provisional ballots for booth 2</td> <td>997</td>
+                    </tr>
+                    <tr>
+                        <td>Provisional ballots for booth 3</td> <td>995, 999</td>
+                    </tr>
+                    </table>
+                </center>
+
+                <p>
+                Since the ballots already have numbers on them, it makes sense to look them up using those numbers.
+                Each line in the manifest would consist of a batch label and a range of ballot numbers,
+                where the range is denoted by a colon,
+                or of a batch label and a set of ballot identifiers in parentheses, separated by spaces.
+                Ballot ranges cannot have gaps: There can be no missing numbers within the range for
+                any single batch.
+                (If there is in fact a gap, input the numbers as a set of identifiers, rather than as a range.)
+                Again, separate the label from the range or set of ballot numbers by a comma.
+                The label must not contain any commas,
+                and the range of ballot numbers or set of identifiers must not contain commas.
+                In this example, we would enter the ballot manifest as follows:
+                </p>
+
+                <p>
+                <pre>
+                Polling place booth 1, 1:130
+                Polling place booth 2, 131:302
+                Polling place booth 3, 303:414
+                Polling place booth 4, 415:615
+                Polling place booth 5, 616:812
+                Polling place booth 6, 813:994
+                Provisional booth 1, (996 998 1000)
+                Provisional booth 3, (995 999)
+                </pre>
+                </p>
+
             </div>
-            <div>
-               <label for="sortedDedupeList">Ballots selected, sorted, duplicates removed:</label><br />
-               <textarea rows="10" cols="80" name="sortedDedupeList" id="sortedDedupeList" readonly="readonly"></textarea>
+        </div>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">Ballot look-up tool</div>
+            <div class="panel-body">
+                <form action="#" method="get">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Ballot manifest</div>
+                        <div class="panel-body">
+                            Each line must have a batch label, a comma, and one of the following:
+                            <ol >
+                                <li >the number of ballots in the batch</li>
+                                <li >A range specified with a colon (e.g., 131:302), or </li>
+                                <li >A list of ballot identifiers within parentheses, separated by spaces (e.g., (996 998 1000)).</li>
+                                <li >Each line should have exactly one comma.</li>
+                            </ol>
+                            <textarea class="form-control" rows="10" cols="40" name="manifest" id="manifest"></textarea>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Ballots to look-up (separated by commas)</div>
+                        <div class="panel-body">
+                            <textarea class="form-control" rows="10" cols="40" name="ballotList" id="ballotList" ></textarea>
+                            <br>
+                            <button type="button" class="btn btn-success" id="lookUpBallot" name="lookUpBallot" value="look up ballots">Look Up Ballots</button>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Sorted lookup table</div>
+                        <div class="panel-body">
+                            <label for="lookUp"></label><br />
+                            <textarea class="form-control" rows="10" cols="40" name="lookUp" id="lookUp" readonly="readonly"></textarea>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div>
-               <label for="duplicates">Repeated ballots:</label><br />
-               <textarea rows="10" cols="80" name="duplicates" id="duplicates" readonly="readonly"></textarea>
+        </div>
+    </div>     
+
+    <div role="tabpanel" class="tab-pane" id="wald">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Audit Progress Test</div>
+            <div class="panel-body">
+                <p>
+                The audit looks at the winner and all the losers together. Every vote for the winner increases
+                the value of the probability ratio. Every vote for any of the losers decreases
+                that value. If sufficient evidence is found that the election is correct, the audit stops.
+                This is indicated by the cell representing the ratio becoming green in colour.
+                If the cell is red in colour, we have to continue the audit.
+                </p>
+
+
+
+                <form action="#" method="get">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Audit progress</div>
+                        <div class="panel-body">
+                            <div class="testTable"></div>
+                        </div>
+                    </div>
+
+                </form>
+
+                <p>
+                <a href="#" class="toggleEndingSampleNotes">Show technical notes.</a>
+                </p>
+
+                <p class="endingSampleNotes notes">
+                The stopping rule implements the following formula from
+                <a href="#">AIE</a>:
+                FIX ME!
+                </p>
             </div>
-        </fieldset>
+        </div>
+    </div>
+</div>
 
-</form>
-
-<p>
-   <a href="#" class="toggleRandomSampleNotes">Show technical notes.</a>
-</p>
-
-<p class="randomSampleNotes notes">
-   The &quot;seed,&quot; concatenated with a comma and the &quot;Sample number,&quot; is passed through the
-   SHA-256 hash function.
-   The result is displayed as &quot;Hashed value (for testing)&quot;.
-   The hashed value, interpreted as a hexadecimal number, is divided by
-   &quot;Number of objects from which to sample.&quot;
-   One is added to the remainder of that division to get &quot;Randomly selected item,&quot;
-   which will be a number between 1 and &quot;Number of objects from which to sample,&quot; inclusive.
-   Clicking &quot;draw sample&quot; successively adds one to &quot;Sample number&quot; and
-   recomputes &quot;Hashed value&quot; and &quot;Randomly selected item&quot;
-   &quot;Draw this many objects&quot; times.
-   Selected items accumulate in &quot;Ballots selected&quot; (and &quot;Ballots selected, sorted&quot;),
-   which reset if the seed or the number of objects changes.
-   The same ballot might be selected more than once.
-   Duplicates are removed in
-   &quot;Ballots selected, duplicates removed.&quot;
-   Ballots selected more than once, and the frequencies of those ballots, are in
-   &quot;Repeated ballots.&quot;
-   Clicking the &quot;reset&quot; button clears the history but leaves the seed.
-</p>
-
-<p class="randomSampleNotes notes">
-   I learned about this method of generating pseudo-random numbers from
-   <a href="http://people.csail.mit.edu/rivest/">Ronald L. Rivest</a>;
-   it is related to a method described in
-   <a href="http://tools.ietf.org/html/rfc3797">http://tools.ietf.org/html/rfc3797</a>.
-   The SHA-256 hash algorithm produces hash values that are hard to predict from the input.
-   They are also roughly equidistributed as the input varies.
-   The advantages of this approach for election auditing and some other applications
-   include the following:
-</p>
-
-<ul class="randomSampleNotes notes">
-    <li> The SH-256 algorithm is public and many implementations are available in many languages.
-         (The Javascript implementation used by this page was written by Brian Turek;
-         The JavaScript routines for arithmetic long integers&mdash;the SHA-256 hashed values&mdash;were
-         written by Leemon Baird).
-    </li>
-    <li>
-        Given the seed, anyone can verify that the sequence of numbers generated was
-        correct&mdash;that it indeed comes from applying SHA-256.
-    </li>
-    <li>
-        Unless the seed is known, the sequence of values generated is unpredictable (so the result
-        is hard to &quot;game&quot;).
-        It is very hard to distinguish the output from independent, uniformly distributed samples.
-    </li>
-</ul>
-
-<p class="randomSampleNotes notes">
-   For comparison, a reference implementation of this approach in Python written by
-   <a href="http://people.csail.mit.edu/rivest/">Ronald L. Rivest</a> is available at
-   <a href=" http://people.csail.mit.edu/rivest/sampler.py">http://people.csail.mit.edu/rivest/sampler.py</a>.
-</p>
-
-<p class="randomSampleNotes notes">
-      For more detail, see
-   <a href="http://statistics.berkeley.edu/~stark/Java/Html/sha256Rand.htm">http://statistics.berkeley.edu/~stark/Java/Html/sha256Rand.htm</a>.
-</p>
-
-
-
-<h2>
-   Find ballots using a ballot manifest
-</h2>
-
-<p>
-   Generally, ballots will be stored in batches, for instance, separated by precinct and mode of voting.
-   To make it easier to find individual ballots, it helps to have a <em>ballot manifest</em>
-   that describes how the ballots are stored.
-   For instance, we might have 1,000 ballots stored as follows:
-</p>
-
-<table>
-   <tr>
-      <th>Batch label</th><th>ballots</th>
-   </tr>
-   <tr>
-      <td>Polling place precinct 1</td> <td>130</td>
-   </tr>
-      <td>Vote by mail precinct 1</td>  <td>172</td>
-   </tr>
-   <tr>
-      <td>Polling place precinct 2</td> <td>112</td>
-   </tr>
-      <td>Vote by mail precinct 2</td>  <td>201</td>
-   </tr>
-   <tr>
-      <td>Polling place precinct 3</td> <td>197</td>
-   </tr>
-      <td>Vote by mail precinct 3</td>  <td>188</td>
-   </tr>
-</table>
-
-
-<p>
-   If ballot 500 is selected for audit, which ballot is that?
-   If we take the listing of batches in the order given by the manifest, and we
-   require that within each batch, the ballots are in an order that does not
-   change during the audit, then the 500th ballot is the 86th ballot among the vote by mail ballots
-   for precinct 2:
-   The first three batches have a total of 130+172+112 = 414 ballots.
-   The first ballot in the fourth batch is ballot 415.
-   Ballot 500 is the 86th ballot in the fourth batch.
-</p>
-
-<p>
-   The ballot look-up tool transforms a list of ballot numbers and a ballot manifest
-   into a list of ballots in each batch.
-   Batch labels should not contain commas.
-   Use a comma to separate each batch label from the number of ballots in that batch
-   (or the range of ballot numbers or the set of ballot identifiers&mdash;see below).
-   The manifest should have one line per batch and no empty lines.
-</p>
-
-<p>
-   For instance, to input the ballot manifest above, you would enter:
-</p>
-
-<p>
-<pre>
-Polling place precinct 1, 130
-Vote by mail precinct 1, 172
-Polling place precinct 2, 112
-Vote by mail precinct 2, 201
-Polling place precinct 3, 197
-Vote by mail precinct 3, 188
-</pre>
-</p>
-
-<p>
-   Some jurisdictions number the ballots cast in an election.
-   If all the ballots in an election are numbered sequentially, the numbers on the ballots that contain
-   a particular contest might not be sequential.
-   For instance, an election might cover precincts 1, 2, and 3, but
-   only voters in precincts 1 and 3 are eligible to vote in the contests to be audited with the current sample.
-   In the previous example, suppose that the jurisdiction had stamped numbers on all the ballots, sequentially, so that
-   the ballots from the polling place in precinct 1 were numbered 1 to 130, the vote by mail ballots from precinct 1 were
-   numbered 131 to 302, the ballots from the polling place in precinct 2 were numbered 303 to 414, and so on,
-   as summarized in the following table:
-</p>
-
-<table>
-   <tr>
-      <th>Batch label</th><th>ballot range</th>
-   </tr>
-   <tr>
-      <td>Polling place precinct 1</td> <td>1 to 130</td>
-   </tr>
-      <td>Vote by mail precinct 1</td>  <td>131 to 302</td>
-   </tr>
-   <tr>
-      <td>Polling place precinct 2</td> <td>303 to 414</td>
-   </tr>
-      <td>Vote by mail precinct 2</td>  <td>415 to 615</td>
-   </tr>
-   <tr>
-      <td>Polling place precinct 3</td> <td>616 to 812</td>
-   </tr>
-      <td>Vote by mail precinct 3</td>  <td>813 to 994</td>
-   </tr>
-   <tr>
-      <td>Provisional ballots for precinct 1</td> <td>996, 998, 1000</td>
-   </tr>
-   <tr>
-      <td>Provisional ballots for precinct 2</td> <td>997</td>
-   </tr>
-   <tr>
-      <td>Provisional ballots for precinct 3</td> <td>995, 999</td>
-   </tr>
-</table>
-
-<p>
-   Since the ballots already have numbers on them, it makes sense to look them up using those numbers.
-   If we were auditing a collection of contests that included only precincts 1 and 3, the ballots subject to audit
-   would be the 686 ballots labeled 1 to 130, 131 to 302, 616 to 812, and 813 to 994, and
-   995, 996, 998, and 1000.
-   In this case, the ballot manifest would include <em>only</em> the six batches that comprise precincts 1 and 3,
-   not all eight batches; there are only 686 ballots in these batches.
-   Each line in the manifest would consist of a batch label and a range of ballot numbers,
-   where the range is denoted by a colon,
-   or of a batch label and a set of ballot identifiers in parentheses, separated by spaces.
-   Ballot ranges cannot have gaps: There can be no missing numbers within the range for
-   any single batch.
-   (If there is in fact a gap, input the numbers as a set of identifiers, rather than as a range.)
-   Again, separate the label from the range or set of ballot numbers by a comma.
-   The label must not contain any commas,
-   and the range of ballot numbers or set of identifiers must not contain commas.
-   In this example, we would enter the ballot manifest as follows:
-</p>
-
-<p>
-<pre>
-Polling place precinct 1, 1:130
-Vote by mail precinct 1, 131:302
-Polling place precinct 3, 616:812
-Vote by mail precinct 3, 813:994
-Provisional precinct 1, (996 998 1000)
-Provisional precinct 3, (995 999)
-</pre>
-</p>
-
-<p>
-   The total number of ballots in the manifest must equal the number cast in the contests that are to be
-   audited together using the sample (686 in this example).
-</p>
-
-    <form action="#" method="get">
-        <fieldset>
-            <legend>Ballot look-up tool</legend>
-            <div>
-                <label for="manifest">Ballot manifest: Each line must have a batch label, a comma, and one of the following:<br />
-                                      &nbsp;&nbsp;(i) the number of ballots in the batch <br />
-                                      &nbsp;&nbsp;(ii) a range specified with a colon (e.g., 131:302), or <br />
-                                      &nbsp;&nbsp;(iii) a list of ballot identifiers within parentheses, separated by spaces (e.g., (996 998 1000)).<br />
-                                      Each line should have exactly one comma.<br />
-                                      </label><br />
-                <textarea rows="25" cols="80" name="manifest" id="manifest"></textarea>
-            </div>
-            <div>
-               <label for="ballotList">Ballots to look up (separated by commas):</label><br />
-               <textarea rows="10" cols="80" name="ballotList" id="ballotList" ></textarea>
-            </div>
-            <div>
-                <input type="button" id="lookUpBallot" name="lookUpBallot" value="look up ballots" />
-            </div>
-            <div>
-               <label for="lookUp">Sorted lookup table:</label><br />
-               <textarea rows="25" cols="80" name="lookUp" id="lookUp" readonly="readonly"></textarea>
-            </div>
-        </fieldset>
-
-</form>
-
-<h2>Wald's Probability ratio test</h2>
-
-<p>
-   The audit looks at the winner and all the losers together. Every vote for the winner increases
-   the value of the probability ratio. Every vote for any of the losers decreases
-   that value. If sufficient evidence is found that the election is correct, the audit stops.
-   This is indicated by the cell representing the ratio becoming green in colour.
-   If the cell is red in colour, we have to continue the auditing.
-</p>
-
-
-
-<form action="#" method="get">
-        <fieldset>
-            <legend>Audit progress</legend>
-              <div class="testTable"></div>
-        </fieldset>
-
-</form>
-
-<p>
-   <a href="#" class="toggleEndingSampleNotes">Show technical notes.</a>
-</p>
-
-<p class="endingSampleNotes notes">
-   The stopping rule implements the following formula from
-   <a href="http://statistics.berkeley.edu/~stark/Preprints/gentle12.pdf">AGI</a>:
-   FIX ME!
-</p>
-
-
-
-
-<p>
-<small>P.B. Stark, <a href="statistics.berkeley.edu/~stark">statistics.berkeley.edu/~stark</a>.
-http://statistics.berkeley.edu/~stark/Java/Html/ballotTools.htm
-Last modified 16 February 2017.</small>
-</p>
+<footer class="footer">
+        <p>
+        <small>Vanessa Teague, <a href="https://people.eng.unimelb.edu.au/vjteague/">https://people.eng.unimelb.edu.au/vjteague/</a>.
+        Last modified 16 June 2017.</small>
+        </p>
+</footer>
 
 </body>
 
