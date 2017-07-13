@@ -1,27 +1,28 @@
-/* default style file for Philip B. Stark's website
-   Copyright 2006-2014 P.B. Stark, statistics.berkeley.edu/~stark 8/24/2014.
+/* default style file for Vishal Mohanty's website
    All rights reserved */
 
 h1,h2,h3,h4,h5 {
-    font-family: helvetica, arial, 'sans serif';
+    font-family: 'Product Sans', 'Bree Serif', helvetica, arial, 'sans serif';
     text-align: left;
     color:#000000;
 }
 
 legend,label {
-    font-family: helvetica, arial, 'sans serif';
+    font-family: Roboto, helvetica, arial, 'sans serif';
     text-align: left;
     color:#000000;
 }
 
 p,table,li,dl,address {
-    font-family: helvetica, arial, 'sans serif';
-    margin-left: 0%;
-    margin-right: 3%;
+    font-family: Poppins, helvetica, arial, 'sans serif';
+    margin-left: 2%;
+    margin-right: 2%;
+    text-align: justify;
 }
 
 dl.leftPadded {
     margin-left: 1em;
+    margin-right: 1em;
 }
 
 dt.leftPadded {
@@ -197,7 +198,7 @@ body {
 }
 
 h1 {
-    font-size: 145%
+    font-size: 200%
 }
 
 h2 {
@@ -218,10 +219,11 @@ hr {
 
 a:link    {
     color:#0000ff;
-    font-family: helvetica, arial, 'sans serif';
+    font-family: Poppins, 'PT Sans', helvetica, arial, 'sans serif';
     font-size: 100%;
     color: blue;
     text-decoration: none;
+    text-align: left;
 }
 
 a:visited {color:#000fff}
@@ -242,4 +244,8 @@ pre {
   body{ background-color:#FFFFFF; background-image:none; color:#000000 }
   #navMenu{ display:none;}
   #chapterMenu{ display:none;}
+}
+
+.table-nonfluid {
+   width: auto !important;
 }
