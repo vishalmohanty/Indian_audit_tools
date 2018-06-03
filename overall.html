@@ -21,7 +21,7 @@
 
 
 <script language="JavaScript1.4" type="text/javascript">
-    pageModDate = "21 July 2017 10:27 AEST";
+    pageModDate = "3 June 2018 18:00 AEST";
     // last edited by Vishal Mohanty
 </script>
 
@@ -701,15 +701,15 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="overall.html">HOME</a>
+            <li><a href="overall.html">EFFICIENT AUDITING OF INDIAN ELECTIONS</a>
         </ul>
-        <ul class="nav navbar-nav">
+        <!--ul class="nav navbar-nav">
         <li><a href="simpleBP.html">SIMPLE BALLOT POLLING AUDIT<span class="sr-only">(current)</span></a></li>
-        </ul>
+        </ul-->
         <ul class="nav navbar-nav">
         <li><a href="https://www.stat.berkeley.edu/~stark/Vote/auditTools.htm">STARK'S BALLOT COMPARISON AUDIT</a></li></ul>
-        <ul class="nav navbar-nav">
-        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm">STARK'S BALLOT POLLING AUDIT</a></li></ul>
+        <!--ul class="nav navbar-nav">
+        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm">STARK'S BALLOT POLLING AUDIT</a></li></ul-->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="developersOverall.html">DEVELOPERS</a></li>
@@ -744,12 +744,14 @@
         <div class="panel-heading">THEORY</div>
         <div class="panel-body">
         <p>
+        <b>Risk limiting audits</b> are gaining ground for being deployed as effective post-election verification of the election outcome across various electoral systems. In this, we manually inspect the cast ballots or in the case of India, the ballots produced by the VVPAT machine until we are sufficiently sure of the election result as being right. This means that we audit the ballots until we have achieved sufficient confidence that the reported error in the election result is below certain level, known as the <em><b>risk</b></em>, denoted as \(\alpha\) which can be set to arbitrarily small values. Decreasing the risk would lead to a proportionate increase in the expected number of ballots to be audited if we use say Ballot Comparison method for auditing. 
+        </p>
+        <p>
         A <b>Risk-Computing Tool</b> is a tool used to compute the most efficient risk-limits to which to
         perform risk-limit auditing in constituencies while determining the overall election result.   
         There are quite a many tools for performing risk-limiting audit, the prominent of them being the
-        Ballot Polling Audit. Tools for performing that is present in Vanessa's webpage titled
-        <b>Simple Ballot Polling Audit</b>. You could alternatively use Stark's Ballot Polling tools at 
-        <b>Stark's Ballot Polling Audit</b>.
+        Ballot Comparison Audit. Tools for performing that is present in Stark's webpage titled
+        <b>Starks's Ballot Comparison Audit</b>.
         </p>
 
         <p>
@@ -886,7 +888,7 @@
             <div class="panel-heading">Technical Notes</div>
             <div class="panel-body">
                 <p >
-                Say the desired overall confidence level is $$ 1 - \epsilon $$
+                Let the desired risk limit be denoted as \(\epsilon\). The desired overall confidence level is $$ 1 - \epsilon $$
                 </p>   
                 <p >
                     We can audit the constituency <em>i</em> in which the winner has won to confidence level 
@@ -900,7 +902,8 @@
                 </p>
                 <p >
                     The cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is 
-                    \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\). Our tool solves the Linear Program
+                    \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\) in the case of Ballot Comparison.
+                    Our tool solves the Linear Program
                     of minimizing the total cost of auditing the constituencies in which the winner won subject to
                     the constraints that \(0\leqslant \alpha_i\leqslant 1\) and for every minimal flipset, \(\sum \alpha_i \geqslant 1\).
                 </p>
