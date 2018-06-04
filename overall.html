@@ -21,8 +21,13 @@
 
 
 <script language="JavaScript1.4" type="text/javascript">
+<<<<<<< HEAD
+    pageModDate = "21 July 2017 10:27 AEST";
+    // last edited by Vishal Mohanty and Vanessa Teague
+=======
     pageModDate = "3 June 2018 18:00 AEST";
     // last edited by Vishal Mohanty
+>>>>>>> d225a1862f82069f53fa7d23b560cef1cdc70f77
 </script>
 
 <script src="http://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
@@ -722,28 +727,35 @@
 </h1>
 
 <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#theory" aria-controls="theory" role="tab" data-toggle="tab">THEORY</a></li>
+    <li role="presentation" class="active"><a href="#background" aria-controls="background" role="tab" data-toggle="tab">HOME</a></li>
     <li role="presentation"><a href="#tool" aria-controls="tool" role="tab" data-toggle="tab">TOOL</a></li>
     <li role="presentation"><a href="#technical" aria-controls="technical" role="tab" data-toggle="tab">TECHNICAL NOTES</a></li>
 </ul>
 
 <!-- Tab panes -->
 <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="theory">
-        <!--p>
-        This Page implements the tools for finding out the <b>Risk Limits</b> for auditing of multi-level
-        elections as is the case in India. It features a one-time contest for electing a single Party or Coalition 
-        to power in the Central Government.
-        </p>
-
-        <p id="hideAll">
+    <div role="tabpanel" class="tab-pane active" id="background">
+        
+        <!-- <p id="hideAll">
         To hide or show everything but the tools <button type="button" class="btn btn-default" id="hideAllProse">Click Here</button>
-        </p-->
+        -->
         <p>
         <div class="panel panel-primary">
-        <div class="panel-heading">THEORY</div>
+        <div class="panel-heading">BACKGROUND</div>
         <div class="panel-body">
         <p>
+        	This Page implements the tools for finding out the <b>Risk Limits</b> for auditing of multi-level
+        	elections as is the case in India. It features a one-time contest for electing a single Party or Coalition 
+        	to power in the Central Government.  The definition of winning is to win a majority of seats in the lok sabha (parliament).
+        </p>
+        
+        
+        <p> All Indian Electronic Voting Machines will be equipped with Voter-Verifiable Paper Audit Trails (VVPATs) in time for the 2019 general election, following demonstrations that the machines are <A HREF="https://indiaevm.org">susceptible to manipulation</A>.  VVPATs provide evidence that each vote has been recorded as the voter intended, without having to trust the perfection or security of the machines.  However, confidence in the result should only follow if the VVPAT is actually used to check the announced election result.  A full manual recount of all constituencies could be prohibitively expensive and time-consuming.   
+        	<A HREF="https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf">Risk Limiting Audits</A> could provide a high degree of confidence in an Indian election result but typically require much less manual inspection than a full hand recount of all VVPATs when the reported results are correct.
+        	
+        	This website guides you through applying Risk Limiting Audits to Indian parliamentary election.  We discuss two risk-limiting audit methods, ballot-level comparisons and ballot polling. 
+        	Finally, and most importantly, we derive a novel and efficient method for auditing the overall parliamentary election result. 
+        	
         <b>Risk limiting audits</b> are gaining ground for being deployed as effective post-election verification of the election outcome across various electoral systems. In this, we manually inspect the cast ballots or in the case of India, the ballots produced by the VVPAT machine until we are sufficiently sure of the election result as being right. This means that we audit the ballots until we have achieved sufficient confidence that the reported error in the election result is below certain level, known as the <em><b>risk</b></em>, denoted as \(\alpha\) which can be set to arbitrarily small values. Decreasing the risk would lead to a proportionate increase in the expected number of ballots to be audited if we use say Ballot Comparison method for auditing. 
         </p>
         <p>
@@ -755,7 +767,7 @@
         </p>
 
         <p>
-        Multi-level elections can be efficiently audited. The desired confidence level in the overall 
+        Our new <A HREF="TBA"> paper</A> gives the technical details for efficient parliamentary audits. The desired confidence level in the overall 
         elections can be shared by individual constituencies. The product of the risk limits in the 
         individual constituencies results in the overall risk limit. When a coalition wins the elections,
         auditing is done in those constituencies where the parties belonging to that particular 
@@ -777,11 +789,10 @@
         <li>Select the constituencies in the first column for which the data is known perfectly. For e.g.
             in constituencies where full manual recounting has been performed, we know the ground truth.
         </li>
-        <li>Set the desired risk limit.</li>
+        <li>Set the desired overall risk limit.</li>
         <li>Click on compute when you have successfully filled in all the fields.</li>
         <li>Audit the constituencies simultaneously using one of RLA tools whose links
-            are present on the top of this webpage. Update the table in case any constituency outcome
-            changes and hence recompute the risk limits and continue the audit.
+            are present on the top of this webpage. Update the table in case any audit fails and hence recompute the risk limits and continue the overall audit.
         </li>
         </ul>
         </div>
@@ -888,24 +899,26 @@
             <div class="panel-heading">Technical Notes</div>
             <div class="panel-body">
                 <p >
-                Let the desired risk limit be denoted as \(\epsilon\). The desired overall confidence level is $$ 1 - \epsilon $$
-                </p>   
+                Say the desired overall risk limit is $$ \alpha $$
+                </p>    
+                <p>This is the probability of (mistakenly) accepting an election result that is actually wrong.  The probability is over the random choices of the audit.</p>
                 <p >
-                    We can audit the constituency <em>i</em> in which the winner has won to confidence level 
-                    $$1-\epsilon^{\alpha_i} $$
+                    We can audit constituency <em>i</em> in which the winner has won to risk limit 
+                    $$\alpha_i $$
                 </p>
                 <p >
                 where \(\alpha_i\) is some constant between 0 and 1. A <em>flipset</em> is a set of constituencies
-                whose result when flipped will alter the election results. The \(\alpha_i\) must be such that
-                in any <em>flipset</em>, the sum of the \(\alpha_i\) of the constituencies must sum up to greater than
-                1. 
+                whose result when flipped will alter the election results. We need to be sure we do not (mistakenly)
+                accept the results in all these constituencies when they are actually wrong.  Therefore the \(\alpha_i\) must be such that
+                in any <em>flipset</em>, the product of the \(\alpha_i\) of the constituencies be less than or equal to \(\alpha\). 
                 </p>
                 <p >
+                    In ballot-level comparison audits, the cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is 
+                    \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\).
+                    
+                    <p> Our tool solves the Linear Program
                     The cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is 
                     \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\) in the case of Ballot Comparison.
-                    Our tool solves the Linear Program
-                    of minimizing the total cost of auditing the constituencies in which the winner won subject to
-                    the constraints that \(0\leqslant \alpha_i\leqslant 1\) and for every minimal flipset, \(\sum \alpha_i \geqslant 1\).
                 </p>
             </div>
         </div>
