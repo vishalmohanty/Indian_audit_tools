@@ -21,13 +21,8 @@
 
 
 <script language="JavaScript1.4" type="text/javascript">
-<<<<<<< HEAD
-    pageModDate = "21 July 2017 10:27 AEST";
-    // last edited by Vishal Mohanty and Vanessa Teague
-=======
     pageModDate = "3 June 2018 18:00 AEST";
     // last edited by Vishal Mohanty
->>>>>>> d225a1862f82069f53fa7d23b560cef1cdc70f77
 </script>
 
 <script src="http://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
@@ -85,14 +80,11 @@
       $("#risk").change(function(){updateRisk();});      
    });
 // ------------ Functions implementing tool-----------
-
 //Global declaration of variables
         var risk;
         var constArray = [];
         var partyArray = [];
-
 //Functions implementing our tool
-
         /*Function called when the risk value is changed
         No Parameters
         Returns true upon successfull execution*/
@@ -124,20 +116,17 @@
             
             return true;
         }
-
         /*Function called when a new file is selected
         It calls upon to build the overall matrix when the input file has proper format
         No Parameters
         No return value*/
         function loadFile(){
             refreshFile(); 
-
             //Bringing back the tools to life when file is loaded properly
             document.getElementById("contestInfo").style="display: block;";
             document.getElementById("voteTally").style="display: block;";
             document.getElementById("auditParam").style="display: block;";
             document.getElementById("computeRisk").style="display: block;";
-
             //Parsing the input csv file
             Papa.parse(document.getElementById("inputFile").files[0], {
                 header:true,
@@ -146,7 +135,6 @@
                 }
             });
         }
-
         /*Function to determine is a party is already present in the list of parties
         Parameters: The party array, party name
         Returns index of party name if present, else -1*/
@@ -157,7 +145,6 @@
             }
             return -1;
         }
-
         /*Function to determine if a constituency is already present in list of constituencies
         Parameters: Constituency array, constituency name
         Returns index of constituency if present, else -1*/
@@ -168,20 +155,18 @@
             }
             return -1;
         }
-
         /*Function to build the overall input table for votes for parties in every constituency
         No Parameters
         Return type: boolean*/
         function buildOverallMat(dataIn) {
             var curConst;
             var c, p, v;
-
             for(var i=0; i<dataIn.length-1; i++){
-                curConst=dataIn[i]["State Name"]+"_"+dataIn[i]["PC NAME"];
+                curConst=dataIn[i]["STATE NAME"]+"_"+dataIn[i]["CONSTITUENCY NAME"];
                 if(constPresent(constArray, curConst)==-1){
                     constArray.push(curConst);
                 }
-                if(dataIn[i]["PARTY NAME"]!="IND" && dataIn[i]["OVER TOTAL VOTES POLLED IN CONSTITUENCY"]>=1
+                if(dataIn[i]["PARTY NAME"]!="IND" && dataIn[i]["VOTES SECURED"]>=dataIn[i]["TOTAL VOTES POLLED IN CONSTITUENCY"]/100
                 && partyPresent(partyArray, dataIn[i]["PARTY NAME"])==-1){
                     partyArray.push(dataIn[i]["PARTY NAME"].toUpperCase());
                 }
@@ -192,15 +177,12 @@
             $("#nSeats").val(constArray.length);
             $("#nCandi").val(partyArray.length);
             nConstituencies = constArray.length;
-
             var str = '<div><table class="table table-striped table-bordered" id="overallMat">'+
                       '<thead></thead><tbody></tbody></table></div>';
             $(".overallTable").empty();
             $(".overallTable").append(str);
-
             str = '';
             str += '<tr><th></th>';
-
             //Placing the parties names on the first row of the table
             for (var W=0; W < partyArray.length; W++) {
                     str += '<th class="text-left success" id="Tcandidate_' + 0 + '_' + W + '">' +
@@ -209,7 +191,6 @@
                 }
             $("#candidateStatistic thead").empty();
             $("#candidateStatistic thead").append(str);
-
             str='';
             //Placing constituency names and votes in subsequent rows
             for (var i=0; i < constArray.length; i++) {
@@ -225,18 +206,16 @@
             }
             $("#candidateStatistic tbody").empty();
             $("#candidateStatistic tbody").append(str);
-
             //Changing the values of votes received by parties in resepective constituencies
             for(var i=0; i<dataIn.length-1; i++){
-                if(dataIn[i]["PARTY NAME"]!="IND" && dataIn[i]["OVER TOTAL VOTES POLLED IN CONSTITUENCY"]>=1){
-                        c=constPresent(constArray, dataIn[i]["State Name"]+"_"+dataIn[i]["PC NAME"]);
+                if(dataIn[i]["PARTY NAME"]!="IND" && dataIn[i]["VOTES SECURED"]>=dataIn[i]["TOTAL VOTES POLLED IN CONSTITUENCY"]/100){
+                        c=constPresent(constArray, dataIn[i]["STATE NAME"]+"_"+dataIn[i]["CONSTITUENCY NAME"]);
                         p=partyPresent(partyArray, dataIn[i]["PARTY NAME"]);
-                        $("#votes_for_" + c + "_" + p).val(dataIn[i]["TOTAL"]);    
+                        $("#votes_for_" + c + "_" + p).val(dataIn[i]["VOTES SECURED"]);    
                     }
             }
             return(true);
         }
-
         /*Function to convert the votes for every constituency into percentages for the parties
         No parameters
         Return Value: 2D array storing the percentages of votes for parties in every constituency*/
@@ -268,7 +247,6 @@
             }
             return percArray;
         }
-
         /*Function to find the diluted margin in every constituency
         No Parameters
         Return value: 1D array storing the diluted margins*/
@@ -284,14 +262,12 @@
             }
             var margArray = new Array(constArray.length);
             var sortedArray = [];
-
             for(var i=0; i<constArray.length; i++){
                 sortedArray = percArray[i].slice().sort(numberLessThan).reverse();
                 margArray[i]=sortedArray[0]-sortedArray[1];
             }
             return margArray;
         }
-
         /*Function to find the winners in every constituency
         No Parameters
         Return Value: 1D array storing Winning Party number in every constituency*/
@@ -307,7 +283,6 @@
             }
             var winArray = new Array(constArray.length);
             var maxIdx; //temporary variable to store the winner's index
-
             for(var i=0; i<constArray.length; i++){
                 maxIdx = 0;
                 for(var j=1; j<partyArray.length; j++){
@@ -318,7 +293,6 @@
             }
             return winArray;
         }
-
         /*Function to find the number of seats that every party has secured in the overall results
         No parameters
         Return value: 1D array storing the number of seats secures by every party*/
@@ -335,13 +309,11 @@
             
             var seats = new Array(partyArray.length).fill(0);
             var winner=0;
-
             for(var i=0; i<winArray.length; i++){
                 seats[winArray[i]]++;
             }
             return seats;
         }
-
         /*Function to find the overall winner of the elections
         No parameters
         Return value: Winning party number*/
@@ -359,15 +331,12 @@
             }
             
             var winner = 0;
-
             for(var i=1; i<seats.length; i++){
                 if(seats[i]>seats[winner])
                     winner=i;
             }
             return winner;
         }
-
-
         /*Function which finds the coalition of the selected parties
         No Parameters
         Returns an array storing the indices of the parties in the coalition*/
@@ -389,7 +358,6 @@
                 }
             return coalition;
         }
-
         /*Function to find the toppling margin = votes for coalition-half of seats
         No parameters
         Returns toppling margin if coalition is successfull, else -1*/
@@ -421,7 +389,6 @@
                 return undefined;
             }
         }
-
         /*Function which determines if party p is present in the coalition*/
         function inCoalition(p){
             try{
@@ -439,7 +406,6 @@
             }
             return false;
         }
-
         /*Function to find the diluted margins in constituencies wherer the winning party was elected
         No Parameters
         Return value: 1D array storing the diluted margins*/
@@ -472,7 +438,6 @@
             }
             return winMargArray;
         }
-
         /*Auxilliary function to find the expected factor for the number of votes in auditing 
         a particular subset of constituencies where the winner has won.
         Parameters: Index of constiteuncy after which constituencies are only audited (when
@@ -491,14 +456,12 @@
                 return undefined;
             }
             var sum=0.0;
-
             for(var j=idx; j<sortWinMargArray.length; j++){
                     sum+=1.0/sortWinMargArray[j];
                 }
             sum*=1.0/(toppleMargin-idx);
             return sum;
         }
-
         /*Main auxilliary function to find the risks upto which the constituencies should be audited
         No Parameters
         Return value: 1D array storing the risks*/
@@ -532,25 +495,21 @@
                 alert(e);
                 return undefined;
             }
-
             var minIdx=0, minMargin;
             var riskArray = []; //Stores the risk limit for every constituency   
             var count=0, dCount=0, check; //Counter for audited and dropped constituencies
             var dropStr='';  //String storing the names of dropped constituencies
-
             if(sortWinMargArray.length<toppleMargin){
                 for(var i=0; i<constArray.length; i++){
                     riskArray[i]=0;
                 }
                 $("#expecAudit").val(0);
             }
-
             else{
                 for(var i=1; i<toppleMargin; i++){
                     if(findExpec(sortWinMargArray, minIdx)>findExpec(sortWinMargArray, i))
                         minIdx = i;
                 }
-
                 winMargArray.sort(numberLessThan); //Non-decereasing order
                 minMargin = winMargArray[minIdx];
                     
@@ -576,7 +535,6 @@
                 }
                 $("#expecAudit").val(Math.ceil(findExpec(sortWinMargArray, minIdx)*Math.log(1/risk)));
             }
-
             //Changing the meta-data of current Audit
             document.getElementById("metaData").style="display: block;";
             $("#winConst").val(count+dCount);
@@ -585,10 +543,8 @@
                 $("#dropConstNames").val(dropStr);
             else
                 $("#dropConstNames").val("No constituencies were dropped");
-
             return riskArray;
         }
-
         /*Function called whenever "Compute" is clicked
         No Parameters
         Creates the table showing the various risks for every constituency
@@ -602,7 +558,6 @@
                 alert(e);
                 return undefined;
             }
-
             //Building the risk matrix
             var str='';
             str = '<div class="table-responsive">'+
@@ -619,22 +574,17 @@
             }
             str+='</tr>';
             $("#riskMat thead").append(str);
-
             str='';
             str+='<tr>';
-
             //Placing the risk limit values under the respective constituency names
             for(var i=0; i<nConstituencies; i++){
                 str+='<td class="text-left">'+ roundToDig(riskArray[i], 2) + '</td>';
             }
             str+='</tr>';
             $("#riskMat tbody").append(str);
-
             return true;
         }
-
 //General-purpose utilities function
-
         function numberLessThan(a,b) { // numerical ordering for javascript sort function
             var diff = parseFloat(a)-parseFloat(b);
             if (diff < 0) {
@@ -645,7 +595,6 @@
                return(1);
             }
          }
-
         // parse a number that contains a % sign to turn it into a decimal fraction     
         function parsePercent(s) {
             var value;
@@ -660,7 +609,6 @@
             }
             return(value);
         }
-
         function roundToDig(num, dig) { // rounds a number or list to dig digits after the decimal place
             var powOfTen = Math.pow(10,dig);
             if ((typeof(num)).toLowerCase() == 'number') {
@@ -678,19 +626,16 @@
                 return(Math.NaN);
             }
         }
-
         // removes commas from a string
         function removeCommas(s) { 
             return(s.replace(/,/gm,''));
         }
-
         // remove leading and trailing spaces
         function trimBlanks(s) { 
             s = s.replace(/^ +/gm,'');
             s = s.replace(/ +$/gm,'');
             return(s);
         }
-
 </script>
 
 <title>Efficient Auditing of Indian Elections</title>
@@ -756,8 +701,8 @@
         	This website guides you through applying Risk Limiting Audits to Indian parliamentary elections.  We discuss two risk-limiting audit methods, ballot-level comparisons and ballot polling. 
         	Finally, and most importantly, we derive a novel and efficient method for auditing the overall parliamentary election result. 
         	
-        <b>Risk limiting audits</b> are gaining ground for being deployed as effective post-election verification of the election outcome across various electoraln systems. In this, we manually inspect the ballots produced by the VVPAT machine, until we are sufficiently sure that the election result is right. We audit the ballots until we know that the probability of failing to detect a wrong election result is below a certain level, known as the <em><b>risk limit</b></em> \((\alpha\)) which can be set to arbitrarily small values. 
-        Decreasing the risk limit would lead to an increase in the expected number of ballots to be audited. 
+        <b>Risk limiting audits</b> are gaining ground for being deployed as effective post-election verification of the election outcome across various electoral systems. In this, we manually inspect the ballots produced by the VVPAT machine, until we are sufficiently confident that the election result is right, or we have decided to perform a full manual recount. The election outcome can be confirmed if we audit the ballots until we know that the probability of failing to detect a wrong election result is below a certain level, known as the <em><b>risk limit</b></em> \((\alpha\)) which can be set to arbitrarily small values. 
+        <P>Decreasing the risk limit would lead to an increase in the expected number of ballots to be audited. 
         </p>
         <p>
         Our <b>Risk-Computing Tool</b> can be used to compute the most efficient risk-limits to which to
@@ -779,22 +724,6 @@
         new election results for that particular constituency.
         </p>
 
-        <p>
-            The tools on this page work as follows:
-        </p>
-
-        <ul>
-        <li>Select an input file having extension .csv in the format as mentioned in the TOOL tab.</li>
-        <li>Select the checkboxes in the first row against the parties which form the winning coalition</li>
-        <li>Select the constituencies in the first column for which the data is known perfectly. For example,
-            in constituencies where full manual recounting has been performed, we know the ground truth.
-        </li>
-        <li>Set the desired overall risk limit.</li>
-        <li>Click on compute when you have successfully filled in all the fields.</li>
-        <li>Audit the constituencies simultaneously using one of RLA tools whose links
-            are present on the top of this webpage. Update the table in case any audit fails and hence recompute the risk limits and continue the overall audit.
-        </li>
-        </ul>
         </div>
         </div>
         </p>
@@ -804,24 +733,42 @@
         <div class="panel panel-primary">
         <div class="panel-heading">INPUT FILE FORMAT</div>
             <div class="panel-body">
-                The input file must be in the <b>.csv</b> format and should be similar in structure to the csv
-                version of the following file released by the Election Commission of India 
-                <a href="http://eci.nic.in/eci_main/archiveofge2014/33.ConstituencyWiseDetailedResultPC.xlsx">
-                Constituency wise detailed result</a>.
-                Delete the first two rows from the excel file and save the file in CSV(Comma Separated
-                Values) format. The file should then have the first row containing the following headers:
+                The input file must be in the <b>.csv</b> format and should have the following column headers.
                 <ul>
-                    <li>State Name</li>
-                    <li>PC NAME</li>
-                    <li>CANDIDATE NAME</li>
+                    <li>STATE NAME</li>
+                    <li>CONSTITUENCY NAME</li>
                     <li>PARTY NAME</li>
-                    <li>TOTAL</li>
-                    <li>OVER TOTAL VOTES POLLED IN CONSTITUENCY</li>
+                    <li>VOTES SECURED</li>
+                    <li>TOTAL VOTES POLLED IN CONSTITUENCY</li>
                 </ul>
-                Only when the file contains all of these headers will the tool be able to process it.
-                Although it may contain some other headers as well. Alternatively you could download
-                the file format from the following link <a href="inputFormat.csv" download>Input Format</a>.
-                It contains the column headers and you just have to fill in the data.
+                The csv input file may contain some other headers as well. You could download
+                the file format from the following <a href="inputFormat.csv" download>Input Format</a>.
+                It contains the column headers and you just have to fill in the data. Sample filled in 
+                input file <a href="trial.csv" download>Sample Input</a>. The excel file containing results
+                from the 2014 General Elections is available at <a href="http://eci.nic.in/eci_main/archiveofge2014/33.ConstituencyWiseDetailedResultPC.xlsx">
+                Constituency wise detailed result</a>.  
+            </div>
+        </div>  
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">INSTRUCTIONS</div>
+            <div class="panel-body">
+                <p>
+                The tools on this page work as follows:
+                </p>
+
+                <ul>
+                <li>Select an input file having extension .csv in the format as mentioned in the TOOL tab.</li>
+                <li>Select the checkboxes in the first row against the parties which form the winning coalition</li>
+                <li>Select the constituencies in the first column for which the data is known perfectly. For e.g.
+                    in constituencies where full manual recounting has been performed, we know the ground truth.
+                </li>
+                <li>Set the desired overall risk limit.</li>
+                <li>Click on compute when you have successfully filled in all the fields.</li>
+                <li>Audit the constituencies simultaneously using one of RLA tools whose links
+                    are present on the top of this webpage. Update the table in case any audit fails and hence recompute the risk limits and continue the overall audit.
+                </li>
+                </ul>  
             </div>
         </div>  
 
@@ -881,7 +828,7 @@
                             <input class="form-control" type="number" min="0" size="10" name="winConst" id="winConst" value="0" readonly/>&nbsp;&nbsp;<br>
                             <label for="dropConst">Number of Dropped Constituencies</label>
                             <input class="form-control" value="0" type="number" min="0" size="10" name="dropConst" id="dropConst" readonly />&nbsp;&nbsp;<br>
-                            <label for="dropConstNames">Dropped Constituencies Names (with State Name prefix)</label>
+                            <label for="dropConstNames">Dropped Constituencies Names (with STATE NAME prefix)</label>
                             <input class="form-control" placeholder="Dropped Constituencies names" type="text" name="dropConstNames" id="dropConstNames" readonly />&nbsp;&nbsp;<br>
                             <label for="expecAudit">Expected number of ballots to audit in case election outcome is correct in all audited constituencies</label>
                             <input class="form-control" value="0" type="number" min="0" size="10" name="expecAudit" id="expecAudit" readonly />&nbsp;&nbsp;<br>
