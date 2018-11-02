@@ -161,7 +161,7 @@
         function buildOverallMat(dataIn) {
             var curConst;
             var c, p, v;
-            for(var i=0; i<dataIn.length-1; i++){
+            for(var i=0; i<dataIn.length-1; i++){ //VT: Not sure why this only runs to length-1.
                 curConst=dataIn[i]["STATE NAME"]+"_"+dataIn[i]["CONSTITUENCY NAME"];
                 if(constPresent(constArray, curConst)==-1){
                     constArray.push(curConst);
@@ -382,7 +382,7 @@
                 if(sum>=Math.floor(constArray.length/2)+1)
                     return (sum-Math.floor(constArray.length/2));
                 else
-                    throw'Not sufficient seats in coalition to form government';
+                    throw('Not sufficient seats in coalition to form government');
             }
             catch(e){
                 alert(e);
