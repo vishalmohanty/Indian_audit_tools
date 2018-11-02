@@ -440,10 +440,10 @@
         }
         /*Auxilliary function to find the expected factor for the number of votes in auditing 
         a particular subset of constituencies where the winner has won.
-        Parameters: Index of constiteuncy after which constituencies are only audited (when
+        Parameters: Index of constituency after which constituencies are only audited (when
         sorted in non-decreasing order of diluted margins)
         Return value: Expected factor*/
-        function findExpec(sortWinMargArray, idx){
+        function findExpec(sortWinMargArray, idx, auditMethod){
             try{
                 var coalition =findCoalition();
                 if(coalition==undefined)
@@ -451,12 +451,17 @@
                 var toppleMargin = findToppleMargin();
                 if(toppleMargin==undefined)
                     throw('Error at finding expected number of ballots. Invalid toppling Margin.');
+		if(auditMethod != "BRAVOBallotPolling" && auditMethod != "LSKMComparision")
+                    throw('Error at finding expected number of ballots. Invalid auditing method.');
             }catch(e){
                 alert(e);
                 return undefined;
             }
             var sum=0.0;
             for(var j=idx; j<sortWinMargArray.length; j++){
+		if(auditMethod == "BRAVOBallotPolling")
+                    sum+=1.0/sortWinMargArray[j]/sortWinMargArray[j]/;
+		else if(auditMethod == "LSKMComparison")
                     sum+=1.0/sortWinMargArray[j];
                 }
             sum*=1.0/(toppleMargin-idx);
@@ -491,6 +496,7 @@
                 var toppleMargin =findToppleMargin();
                 if(toppleMargin==undefined)
                     throw('Error at finding overall risks. Invalid toppling margin.');
+		var auditMethod = "LSKMComparison"; //VT: Obviously need to update this to let the user choose the option.
             }catch(e){
                 alert(e);
                 return undefined;
@@ -507,7 +513,7 @@
             }
             else{
                 for(var i=1; i<toppleMargin; i++){
-                    if(findExpec(sortWinMargArray, minIdx)>findExpec(sortWinMargArray, i))
+                    if(findExpec(sortWinMargArray, minIdx,auditMethod)>findExpec(sortWinMargArray, i,auditMethod))
                         minIdx = i;
                 }
                 winMargArray.sort(numberLessThan); //Non-decereasing order
@@ -518,14 +524,14 @@
                     if(check.checked)
                         riskArray[i]=0;
                     else if(inCoalition(winArray[i])){ //If not a winner's constituency, no need to audit
-                        if(margArray[i]<minMargin){ //If diluted margin in winner's constituency is more
+                        if(margArray[i]<minMargin){ //If diluted margin in winner's constituency is less
                             dCount++;               //than the prescribed upper limit, no need to audit
                             riskArray[i]=0;
                             dropStr+=constArray[i];
                             dropStr+='; ';
                         }
-                        else{ //If diluted margin within the desired upper bound
-                            riskArray[i]=Math.pow(risk, 1.0/(toppleMargin-minIdx));
+                        else{ //If diluted margin within the desired upper bound.  
+                            riskArray[i]=Math.pow(risk, 1.0/(toppleMargin-minIdx));  
                             count++;
                         }
                     }
