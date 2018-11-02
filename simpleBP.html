@@ -10,30 +10,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-<!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/bootstrap.min.css" rel="stylesheet">
 
 <link rel="shortcut icon" href="./voteIcon.ico"/>
-<link rel="shortcut icon" href="./voteIcon.ico">
+<link rel="shortcut icon" href="./voteIcon.ico"/>
 <link rel="stylesheet" type="text/css" href="./vmDefault.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
-<link href="https://fonts.googleapis.com/css?family=PT+Sans|Poppins|Roboto|Lobster|Bree+Serif|Product+Sans|Montserrat" rel="stylesheet">
-
+<link rel="stylesheet" type="text/css" href="./css/jquery-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="./css/googlefonts.css" />
 
 <script language="JavaScript1.4" type="text/javascript">
-    pageModDate = "7 July 2017 13:09 PDT";
+    pageModDate = "3 June 2018 18:00 AEST";
     // last edited by Vishal Mohanty
 </script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.js"></script>
+<script src="./js/alasql.min.js"></script>
+<script lang="javascript" src="./js/xlsx.full.min.js"></script>
+<script type="text/javascript" src="./js//papaparse.min.js"></script>
+
+<script type="text/javascript" src="./js/jquery.min.js"></script>
+<script type="text/javascript" src="./js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="./js/jquery.flot.js"></script>
+<script type="text/javascript"  src="./js/bootstrap.min.js"></script>
+<script type="text/javascript" async
+  src="./js/MathJax/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
 <script type="text/javascript" src="./sha256.js"></script>
 <script type="text/javascript" src="./BigInt.js"></script>
-<script type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 
 
 <script type="text/javascript">
@@ -118,7 +121,7 @@
 /*Function which sets up the contest
 No Parameters
 Returns true upon successfull execution*/
-        function addContest() {  
+        function addContest() {
             candidates.push([]); //Creates new contest
             names.push([]);
             winners.push([]);
@@ -158,7 +161,7 @@ Returns true upon successfull execution*/
         }
 
 /*Function which removes most recently added contest
-Not needed currently 
+Not needed currently
         function removeContest(){
             var conStr = (candidates.length-1).toString();
             $("#hrCon" + conStr).remove();
@@ -196,7 +199,7 @@ Returns true upon completion
             //Setting up the table
             var str = '<div class="testStatistic" id="testStatistic" >' +
                       '<table class="table table-nonfluid" id="testMatrix"><tbody></tbody></table></div>';
-            
+
             //Clearing the existing table
             $(".testTable").empty();
             $(".testTable").append(str);
@@ -240,7 +243,7 @@ Returns true upon completion
                    (function(x){ return function(){updateTestStatistic(x);}})(i));
             }
             $('.ui-spinner-button').click(function() {$(this).siblings('input').change();});
-            
+
             /*
             // populate the Wald factor matrix
             waldFactor = [];
@@ -262,7 +265,7 @@ Returns true upon completion
 
             return(true);
         }
-        
+
 /*Function to test the progress of the audit
 Parameters: Contest i which in our case is 0 always
 No return value*/
@@ -278,7 +281,7 @@ No return value*/
                 totVotes += vL;
                 totLosVotes += vL;
             }
-            
+
             ts = 1.0/(Math.pow(wf1, totWinVotes) * Math.pow(wf2, totLosVotes));
             $("#T_" + [0, losers[0][0], winners[0][0]].join('_')).text(roundToDig(ts, 2));
                 if (ts <= risk) {
@@ -339,7 +342,7 @@ Returns true on successfull execution*/
 /*Initialization function
 No Parameters
 No return value*/
-        function startMe() {   
+        function startMe() {
             clearList();
             hashMe();
         }
@@ -365,7 +368,7 @@ No return value*/
 /*Reset function to reset everything to defaults
 No Parameters
 No return value*/
-        function resetMe() { 
+        function resetMe() {
             clearList();
             $("#samNum").val('0');
         }
@@ -373,7 +376,7 @@ No return value*/
 /*Function which draws the next sample, of #samMany ballots
 No Parameters
 No return value*/
-        function nextSample() {   
+        function nextSample() {
             for (var i=0; i < parseInt($("#samMany").val()); i++) {
                 $("#samNum").val(parseInt($("#samNum").val()) + 1);
                 hashMe();
@@ -429,8 +432,8 @@ sum of votes for candidates doesn't exceed total number of votes*/
                 }
 
                 /* If risk limit has been set; we can calculate sample size if all margins are
-                      defined.*/                    
-                if (parsePercent($("#risk").val())){                   
+                      defined.*/
+                if (parsePercent($("#risk").val())){
                     asn = Math.max(asn, findAsn(ballots,
                               dum[cani-1],
                               dum[cani]));
@@ -438,7 +441,7 @@ sum of votes for candidates doesn't exceed total number of votes*/
             }
         }
 
-        //Catching and reporting exceptions 
+        //Catching and reporting exceptions
         //Reseting values in case of error
         catch(e) {
            minMargin = 'undefined';
@@ -452,7 +455,7 @@ sum of votes for candidates doesn't exceed total number of votes*/
             $("#theMargin").text('Smallest margin (votes): undefined');
             $("#asn").text('Expected sample size: undefined');
         }
-        //If there are sufficient candidates and min Margin is calculated successfully 
+        //If there are sufficient candidates and min Margin is calculated successfully
         else {
             $("#theMargin").text('Smallest margin (votes): ' + commify(minMargin) + '');
             $("#theDilutedMargin").text(' Diluted margin: ' + commify(doubleToStr(100*minMargin/ballots,2)) + '%');
@@ -848,11 +851,11 @@ Returns true on successfull parsing else false*/
         <p>
         This page implements some tools to conduct <b>Simple Ballot-Polling</b> risk-limiting audits as described in
         <a href="#">Auditing of Indian Elections</a>, by Mohanty, Vanessa et.al.
-        
+
         For the previous versions of <b>Ballot Polling</b> risk-limiting audit go to Philip Stark's page
         using the navbar on the top.
 
-        For an implementation of tools for <b>Ballot Comparison</b> risk-limiting audits navigate to 
+        For an implementation of tools for <b>Ballot Comparison</b> risk-limiting audits navigate to
         Philip Stark's webpage titled "Ballot Comparison Audit".
         </p>
 
@@ -869,13 +872,13 @@ Returns true on successfull parsing else false*/
                 the votes. The <b>Risk Limit</b> is the maximum probability that the audit will not detect
                 any error in election result when it is present. The error here refers to the case when the
                 candidate/party declared as the winner in a given constituency is not the actual winner who
-                would be reported by a full-hand manual count of the votes. 
+                would be reported by a full-hand manual count of the votes.
                 </p>
 
                 <p>
                 There are quite a many tools for performing risk-limiting audit, the prominent of them being the
-                Ballot Polling and the Ballot Comparison Audit. This page implemenets the tools for performing 
-                Ballot Polling Audit in a simpler manner. The original Ballot Polling audit as implemented by 
+                Ballot Polling and the Ballot Comparison Audit. This page implemenets the tools for performing
+                Ballot Polling Audit in a simpler manner. The original Ballot Polling audit as implemented by
                 Philip Stark can be found on his webpage. Stark has also developed tools for <b>Ballot Comparison Audit</b>
                 which can be reached using the navigation links on the top of the page.
                 </p>
@@ -888,10 +891,10 @@ Returns true on successfull parsing else false*/
 
                 <p>
                 Risk limiting method audits the ballots at random using a random number generator. If the random sample gives
-                sufficient evidence that the election outcome is correct then the audit stops. Else if convincing evidence 
-                is not attained, we keep auditing the ballots until we have audited all the ballots, in which case the 
+                sufficient evidence that the election outcome is correct then the audit stops. Else if convincing evidence
+                is not attained, we keep auditing the ballots until we have audited all the ballots, in which case the
                 exact election outcome is known to us. This is based on the assumption that the manual auditing represents
-                the ground truth and is error-free. 
+                the ground truth and is error-free.
                 </p>
 
                 <p>
@@ -966,7 +969,7 @@ Returns true on successfull parsing else false*/
                                     <div class="contestList"></div>
                                 </div>
                             </div>
-                            
+
                             <div class="panel panel-default">
                                 <div class="panel-heading">AUDIT PARAMETERS</div>
                                 <div class="panel-body">
@@ -976,7 +979,7 @@ Returns true on successfull parsing else false*/
                                 </div>
                             </div>
                         </div>
-                        
+
                 </form>
             </div>
         </div>
@@ -1037,17 +1040,17 @@ Returns true on successfull parsing else false*/
         <p><a href="#" class="toggleStartingSampleNotes">Show Technical Notes</a></p>
         <p class="startingSampleNotes notes">
         The initial sample size form implements this formula from <a href="#">AIE</a>:
-        </p>   
+        </p>
         <p class="startingSampleNotes notes">
-        $$ 
+        $$
             \mbox{ASN} \approx \frac {\ln(1/\alpha)}{ p_w \ln(\frac{p_w\ast (2-p_w-p_r)}{(p_w+p_r)\ast (1-p_w)}) + \ln(\frac{2 - 2p_w}{1-p_w-p_r})},
         $$
         </p>
         <p class="startingSampleNotes notes">
         where \(w\) is a candidate reported to have won, \(r\) is the  runner-up candidate and
-        \(p_w\) and \(p_r\) are the percentage of votes won by the winner and the 
+        \(p_w\) and \(p_r\) are the percentage of votes won by the winner and the
         runner-up respectively.
-       
+
     </div>
 
     <div role="tabpanel" class="tab-pane" id="sampling">
@@ -1086,10 +1089,10 @@ Returns true on successfull parsing else false*/
                                     <button type="button" class="btn btn-danger" name="reset" id="reset" value="reset" >Reset</button>
                                 </div>
                             </div>
-                            
+
                         </div>
                 </form>
-                <form> 
+                <form>
                     <div class="panel panel-default">
                         <div class="panel-heading" for="list">BALLOTS SELECTED</div>
                         <div class="panel-body">
@@ -1119,7 +1122,7 @@ Returns true on successfull parsing else false*/
                         </div>
                     </div>
                 </form>
-                
+
             </div>
         </div>
         <p>
@@ -1195,7 +1198,7 @@ Returns true on successfull parsing else false*/
                 If ballot 500 is selected for audit, which ballot is that?
                 If we take the listing of batches in the order given by the manifest, and we
                 require that within each batch, the ballots are in an order that does not
-                change during the audit, then the 500th ballot is the 86th ballot among the 
+                change during the audit, then the 500th ballot is the 86th ballot among the
                 for ballots for polling place booth 4:
                 The first three batches have a total of 130+172+112 = 414 ballots.
                 The first ballot in the fourth batch is ballot 415.
@@ -1339,7 +1342,7 @@ Returns true on successfull parsing else false*/
                 </form>
             </div>
         </div>
-    </div>     
+    </div>
 
     <div role="tabpanel" class="tab-pane" id="wald">
         <div class="panel panel-primary">
@@ -1373,7 +1376,7 @@ Returns true on successfull parsing else false*/
                 <p class="endingSampleNotes notes">
                 The stopping rule implements the following formula from
                 <a href="#">AIE</a>:
-                If we get a vote for the winner, we multiply the wald probability ratio \(T\) by 
+                If we get a vote for the winner, we multiply the wald probability ratio \(T\) by
                 $$
                     \frac{2\ast p_w}{p_w + p_r}
                 $$
@@ -1382,7 +1385,7 @@ Returns true on successfull parsing else false*/
                     \frac{2-2\ast p_w}{2- p_w - p_r}
                 $$
                 where \(p_w\) stands for the winner's vote percentage and \(p_r\) stands for the runnerup's
-                vote percentage. 
+                vote percentage.
                 When \(\frac{1}{T}\) becomes less than \(\alpha\), we have reached the desired confidence level
                 and the audit can stop.
                 </p>
