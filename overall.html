@@ -25,7 +25,7 @@
     // last edited by Vishal Mohanty
 </script>
 
-<script src="http://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
+<script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
 <script lang="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.10.6/xlsx.full.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.2/papaparse.min.js"></script>
 
@@ -77,7 +77,7 @@
       $(".notes").css({color:"#333", 'font-size':"80%", 'margin-left':"5%", 'background-color':'#eee'});
       $("#hideAllProse").click(function(){$("p:not(form p),pre:not(form pre),table:not(form table),ul:not(form ul),li:not(form li),#visualizing,#placeholder,#plotTitle,#considerations" ).toggle();$(".notes").hide();$("#hideAll").show();});
       $("input[type=text]").focus(function(){this.select();});
-      $("#risk").change(function(){updateRisk();});      
+      $("#risk").change(function(){updateRisk();});
    });
 // ------------ Functions implementing tool-----------
 //Global declaration of variables
@@ -88,7 +88,7 @@
         /*Function called when the risk value is changed
         No Parameters
         Returns true upon successfull execution*/
-        function updateRisk(){    
+        function updateRisk(){
             try{
                 risk = parsePercent($("#risk").val());
                 if(risk>1 || risk<0)
@@ -101,7 +101,7 @@
             }
             return true;
         }
-        
+
         /*Clearing the audit requirements for the previous audit
         No Parameters
         Returns true on successful execution*/
@@ -113,7 +113,7 @@
             $("#auditParam div").html('');
             $("#computeRisk div").html('');
             document.getElementById("metaData").style=("display: none;");
-            
+
             return true;
         }
         /*Function called when a new file is selected
@@ -121,7 +121,7 @@
         No Parameters
         No return value*/
         function loadFile(){
-            refreshFile(); 
+            refreshFile();
             //Bringing back the tools to life when file is loaded properly
             document.getElementById("contestInfo").style="display: block;";
             document.getElementById("voteTally").style="display: block;";
@@ -170,9 +170,9 @@
                 && partyPresent(partyArray, dataIn[i]["PARTY NAME"])==-1){
                     partyArray.push(dataIn[i]["PARTY NAME"].toUpperCase());
                 }
-                
+
             }
-            
+
             //Placing values in the palce holders in HTML form
             $("#nSeats").val(constArray.length);
             $("#nCandi").val(partyArray.length);
@@ -211,7 +211,7 @@
                 if(dataIn[i]["PARTY NAME"]!="IND" && dataIn[i]["VOTES SECURED"]>=dataIn[i]["TOTAL VOTES POLLED IN CONSTITUENCY"]/100){
                         c=constPresent(constArray, dataIn[i]["STATE NAME"]+"_"+dataIn[i]["CONSTITUENCY NAME"]);
                         p=partyPresent(partyArray, dataIn[i]["PARTY NAME"]);
-                        $("#votes_for_" + c + "_" + p).val(dataIn[i]["VOTES SECURED"]);    
+                        $("#votes_for_" + c + "_" + p).val(dataIn[i]["VOTES SECURED"]);
                     }
             }
             return(true);
@@ -223,12 +223,12 @@
             var percArray = [];
             var dataArray = [];
             var sumArray = new Array(constArray.length).fill(0);
-            
+
             for (var i=0; i < constArray.length; i++) {
                 dataArray[i]=[];
                 for (var W=0; W < partyArray.length; W++) {
-                    dataArray[i][W]=parseInt($("#votes_for_" + i + "_" + W).val());    
-                    sumArray[i]+=parseInt($("#votes_for_" + i + "_" + W).val());                 
+                    dataArray[i][W]=parseInt($("#votes_for_" + i + "_" + W).val());
+                    sumArray[i]+=parseInt($("#votes_for_" + i + "_" + W).val());
                 }
                 try{
                     if(sumArray[i]==0)
@@ -306,7 +306,7 @@
                 alert(e);
                 return undefined;
             }
-            
+
             var seats = new Array(partyArray.length).fill(0);
             var winner=0;
             for(var i=0; i<winArray.length; i++){
@@ -329,7 +329,7 @@
                 alert(e);
                 return undefined;
             }
-            
+
             var winner = 0;
             for(var i=1; i<seats.length; i++){
                 if(seats[i]>seats[winner])
@@ -373,7 +373,7 @@
                 alert(e);
                 return undefined;
             }
-            
+
             var sum=0;
             try{
                 for (var i=0; i < coalition.length; i++) {
@@ -399,7 +399,7 @@
                 alert(e);
                 return undefined;
             }
-            
+
             for(var i=0; i<coalition.length; i++){
                 if(coalition[i]==p)
                     return true;
@@ -427,7 +427,7 @@
                 alert(e);
                 return undefined;
             }
-            
+
             var winMargArray = [];
             var check=0;
             for(var i=0; i<constArray.length; i++){
@@ -438,7 +438,7 @@
             }
             return winMargArray;
         }
-        /*Auxilliary function to find the expected factor for the number of votes in auditing 
+        /*Auxilliary function to find the expected factor for the number of votes in auditing
         a particular subset of constituencies where the winner has won.
         Parameters: Index of constituency after which constituencies are only audited (when
         sorted in non-decreasing order of diluted margins)
@@ -502,7 +502,7 @@
                 return undefined;
             }
             var minIdx=0, minMargin;
-            var riskArray = []; //Stores the risk limit for every constituency   
+            var riskArray = []; //Stores the risk limit for every constituency
             var count=0, dCount=0, check; //Counter for audited and dropped constituencies
             var dropStr='';  //String storing the names of dropped constituencies
             if(sortWinMargArray.length<toppleMargin){
@@ -518,7 +518,7 @@
                 }
                 winMargArray.sort(numberLessThan); //Non-decereasing order
                 minMargin = winMargArray[minIdx];
-                    
+
                 for(i=0; i<constArray.length; i++){
                     check = document.getElementById('consti_' + i);
                     if(check.checked)
@@ -530,13 +530,13 @@
                             dropStr+=constArray[i];
                             dropStr+='; ';
                         }
-                        else{ //If diluted margin within the desired upper bound.  
-                            riskArray[i]=Math.pow(risk, 1.0/(toppleMargin-minIdx));  
+                        else{ //If diluted margin within the desired upper bound.
+                            riskArray[i]=Math.pow(risk, 1.0/(toppleMargin-minIdx));
                             count++;
                         }
                     }
                     else{
-                        riskArray[i]=0;   
+                        riskArray[i]=0;
                     }
                 }
                 $("#expecAudit").val(Math.ceil(findExpec(sortWinMargArray, minIdx)*Math.log(1/risk)));
@@ -573,7 +573,7 @@
             $(".newRisks").append(str);
             str = '';
             str+='<tr>';
-            
+
             //Placing the constituency names at the headers of every column
             for(var i=0; i<constArray.length; i++){
                 str+='<th class="candidateRow text-left">'+ constArray[i] +'</th>';
@@ -601,7 +601,7 @@
                return(1);
             }
          }
-        // parse a number that contains a % sign to turn it into a decimal fraction     
+        // parse a number that contains a % sign to turn it into a decimal fraction
         function parsePercent(s) {
             var value;
             if (s.indexOf('%') == -1) {
@@ -633,11 +633,11 @@
             }
         }
         // removes commas from a string
-        function removeCommas(s) { 
+        function removeCommas(s) {
             return(s.replace(/,/gm,''));
         }
         // remove leading and trailing spaces
-        function trimBlanks(s) { 
+        function trimBlanks(s) {
             s = s.replace(/^ +/gm,'');
             s = s.replace(/ +$/gm,'');
             return(s);
@@ -686,7 +686,7 @@
 <!-- Tab panes -->
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="background">
-        
+
         <!-- <p id="hideAll">
         To hide or show everything but the tools <button type="button" class="btn btn-default" id="hideAllProse">Click Here</button>
         -->
@@ -696,36 +696,36 @@
         <div class="panel-body">
         <p>
         	This page implements the tools for finding out the <b>Risk Limits</b> for auditing of multi-level
-        	elections as is the case in India. It considers a one-time contest for electing a single Party or Coalition 
+        	elections as is the case in India. It considers a one-time contest for electing a single Party or Coalition
         	to power in the Central Government.  The definition of winning is to win a majority of seats in the lok sabha (parliament).
         </p>
-        
-        
-        <p> All Indian Electronic Voting Machines will be equipped with Voter-Verifiable Paper Audit Trails (VVPATs) in time for the 2019 general election, following demonstrations that the machines are <A HREF="https://indiaevm.org">susceptible to manipulation</A>.  VVPATs provide evidence that each vote has been recorded as the voter intended, without having to trust the perfection or security of the machines.  However, confidence in the result should only follow if the VVPAT is actually used to check the announced election result.  A full manual recount of all constituencies could be prohibitively expensive and time-consuming.   
+
+
+        <p> All Indian Electronic Voting Machines will be equipped with Voter-Verifiable Paper Audit Trails (VVPATs) in time for the 2019 general election, following demonstrations that the machines are <A HREF="https://indiaevm.org">susceptible to manipulation</A>.  VVPATs provide evidence that each vote has been recorded as the voter intended, without having to trust the perfection or security of the machines.  However, confidence in the result should only follow if the VVPAT is actually used to check the announced election result.  A full manual recount of all constituencies could be prohibitively expensive and time-consuming.
         	<A HREF="https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf">Risk Limiting Audits</A> could provide a high degree of confidence in an Indian election result and typically require much less manual inspection than a full hand recount of all VVPATs when the reported results are correct.
-        	
-        	This website guides you through applying Risk Limiting Audits to Indian parliamentary elections.  We discuss two risk-limiting audit methods, ballot-level comparisons and ballot polling. 
-        	Finally, and most importantly, we derive a novel and efficient method for auditing the overall parliamentary election result. 
-        	
-        <b>Risk limiting audits</b> are gaining ground for being deployed as effective post-election verification of the election outcome across various electoral systems. In this, we manually inspect the ballots produced by the VVPAT machine, until we are sufficiently confident that the election result is right, or we have decided to perform a full manual recount. The election outcome can be confirmed if we audit the ballots until we know that the probability of failing to detect a wrong election result is below a certain level, known as the <em><b>risk limit</b></em> \((\alpha\)) which can be set to arbitrarily small values. 
-        <P>Decreasing the risk limit would lead to an increase in the expected number of ballots to be audited. 
+
+        	This website guides you through applying Risk Limiting Audits to Indian parliamentary elections.  We discuss two risk-limiting audit methods, ballot-level comparisons and ballot polling.
+        	Finally, and most importantly, we derive a novel and efficient method for auditing the overall parliamentary election result.
+
+        <b>Risk limiting audits</b> are gaining ground for being deployed as effective post-election verification of the election outcome across various electoral systems. In this, we manually inspect the ballots produced by the VVPAT machine, until we are sufficiently confident that the election result is right, or we have decided to perform a full manual recount. The election outcome can be confirmed if we audit the ballots until we know that the probability of failing to detect a wrong election result is below a certain level, known as the <em><b>risk limit</b></em> \((\alpha\)) which can be set to arbitrarily small values.
+        <P>Decreasing the risk limit would lead to an increase in the expected number of ballots to be audited.
         </p>
         <p>
         Our <b>Risk-Computing Tool</b> can be used to compute the most efficient risk-limits to which to
-        perform risk-limit auditing in constituencies, in order to check the overall parliamentary election result.   
-        We then direct the user to perform the risk-limiting audit on each constituency using 
+        perform risk-limit auditing in constituencies, in order to check the overall parliamentary election result.
+        We then direct the user to perform the risk-limiting audit on each constituency using
         <b>Starks's Ballot Comparison Audit</b>.
         </p>
 
         <p>
-        Our new <A HREF="TBA"> paper</A> gives the technical details for efficient parliamentary audits. The desired confidence level in the overall 
-        elections can be shared by individual constituencies. The product of the risk limits in the 
+        Our new <A HREF="TBA"> paper</A> gives the technical details for efficient parliamentary audits. The desired confidence level in the overall
+        elections can be shared by individual constituencies. The product of the risk limits in the
         individual constituencies is the overall risk limit. When a coalition wins the elections,
-        auditing is done in those constituencies where the parties belonging to that particular 
+        auditing is done in those constituencies where the parties belonging to that particular
         coalition have won. The sharing of the risk limits is done assuming that the election outcome
         is correct in the audited constituencies. If during the audit the result in any constituency
         does change, then the risk limits to which the other constituencies have been audited must be
-        changed. This will require auditing more votes in those constituencies. 
+        changed. This will require auditing more votes in those constituencies.
         The new risk-limits will be reflected in the tools developed by us by simply feeding in
         new election results for that particular constituency.
         </p>
@@ -735,7 +735,7 @@
         </p>
     </div>
 
-    <div role="tabpanel" class="tab-pane" id="tool">    
+    <div role="tabpanel" class="tab-pane" id="tool">
         <div class="panel panel-primary">
         <div class="panel-heading">INPUT FILE FORMAT</div>
             <div class="panel-body">
@@ -749,12 +749,12 @@
                 </ul>
                 The csv input file may contain some other headers as well. You could download
                 the file format from the following <a href="inputFormat.csv" download>Input Format</a>.
-                It contains the column headers and you just have to fill in the data. Sample filled in 
+                It contains the column headers and you just have to fill in the data. Sample filled in
                 input file <a href="trial.csv" download>Sample Input</a>. The excel file containing results
                 from the 2014 General Elections is available at <a href="http://eci.nic.in/eci_main/archiveofge2014/33.ConstituencyWiseDetailedResultPC.xlsx">
-                Constituency wise detailed result</a>.  
+                Constituency wise detailed result</a>.
             </div>
-        </div>  
+        </div>
 
     <div class="panel panel-primary">
         <div class="panel-heading">INSTRUCTIONS</div>
@@ -774,9 +774,10 @@
                 <li>Audit the constituencies simultaneously using one of RLA tools whose links
                     are present on the top of this webpage. Update the table in case any audit fails and hence recompute the risk limits and continue the overall audit.
                 </li>
-                </ul>  
+                </ul>
+		<p>Note: these are prototype tools designed as part of a student project.  Although we have done our best to make them accurate and robust, we don't offer any warranty that the answers are perfectly correct.  Please check the outputs before using for binding audits.  </p>
             </div>
-        </div>  
+        </div>
 
     <div class="panel panel-primary">
         <div class="panel-heading">RISK COMPUTING TOOL</div>
@@ -801,7 +802,7 @@
                                         <label for="nCandi">Number of Parties:</label>
                                         <input class="form-control" placeholder="Number of Parties eg.10" value="0" type="number" min="0" size="10" name="nCandi" id="nCandi" readonly />&nbsp;&nbsp;<br>
                                         <label for="contestName' + conStr + '">Contest Name: </label>
-                                        <input class="form-control" type="text" size="80" placeholder="Contest" id="contestName' + 0 + '" class="contestName" />      
+                                        <input class="form-control" type="text" size="80" placeholder="Contest" id="contestName' + 0 + '" class="contestName" />
                                 </div>
                             </div>
                     </div>
@@ -853,24 +854,24 @@
             <div class="panel-body">
                 <p >
                 Say the desired overall risk limit is $$ \alpha $$
-                </p>    
+                </p>
                 <p>This is the probability of (mistakenly) accepting an election result that is actually wrong.  The probability is over the random choices of the audit.</p>
                 <p >
-                    We can audit constituency <em>i</em> in which the winner has won to risk limit 
+                    We can audit constituency <em>i</em> in which the winner has won to risk limit
                     $$\alpha_i $$
                 </p>
                 <p >
                 where \(\alpha_i\) is some constant between 0 and 1. A <em>flipset</em> is a set of constituencies
                 whose result when flipped will alter the election results. We need to be sure we do not (mistakenly)
                 accept the results in all these constituencies when they are actually wrong.  Therefore the \(\alpha_i\) must be such that
-                in any <em>flipset</em>, the product of the \(\alpha_i\) of the constituencies be less than or equal to \(\alpha\). 
+                in any <em>flipset</em>, the product of the \(\alpha_i\) of the constituencies be less than or equal to \(\alpha\).
                 </p>
                 <p >
-                    In ballot-level comparison audits, the cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is 
+                    In ballot-level comparison audits, the cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is
                     \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\).
-                    
+
                     <p> Our tool solves the Linear Program to minimize the total expected auditing cost assuming the announced results are correct.
-                    The cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is 
+                    The cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is
                     \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\) in the case of Ballot Comparison.
                 </p>
             </div>
