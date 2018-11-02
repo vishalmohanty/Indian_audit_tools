@@ -668,9 +668,9 @@
         <li><a href="simpleBP.html">SIMPLE BALLOT POLLING AUDIT<span class="sr-only">(current)</span></a></li>
         </ul-->
         <ul class="nav navbar-nav">
-        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/auditTools.htm">STARK'S BALLOT COMPARISON AUDIT</a></li></ul>
-        <!--ul class="nav navbar-nav">
-        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm">STARK'S BALLOT POLLING AUDIT</a></li></ul-->
+        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/auditTools.htm">LSKM BALLOT-LEVEL COMPARISON AUDIT</a></li></ul>
+        <ul class="nav navbar-nav">
+        <li><a href="https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm">BRAVO BALLOT POLLING AUDIT</a></li></ul>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="developersOverall.html">DEVELOPERS</a></li>
@@ -709,23 +709,31 @@
         <p> All Indian Electronic Voting Machines will be equipped with Voter-Verifiable Paper Audit Trails (VVPATs) in time for the 2019 general election, following demonstrations that the machines are <A HREF="https://indiaevm.org">susceptible to manipulation</A>.  VVPATs provide evidence that each vote has been recorded as the voter intended, without having to trust the perfection or security of the machines.  However, confidence in the result should only follow if the VVPAT is actually used to check the announced election result.  A full manual recount of all constituencies could be prohibitively expensive and time-consuming.
         	<A HREF="https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf">Risk Limiting Audits</A> could provide a high degree of confidence in an Indian election result and typically require much less manual inspection than a full hand recount of all VVPATs when the reported results are correct.
 
-        	This website guides you through applying Risk Limiting Audits to Indian parliamentary elections.  We discuss two risk-limiting audit methods, ballot-level comparisons and ballot polling.
+        	This website guides you through applying Risk Limiting Audits to Indian parliamentary elections.  We use two existing risk-limiting audit methods by Lindeman, Stark et al, based on ballot-level comparisons and ballot polling.
         	Finally, and most importantly, we derive a novel and efficient method for auditing the overall parliamentary election result.
 
-        <b>Risk limiting audits</b> are gaining ground for being deployed as effective post-election verification of the election outcome across various electoral systems. In this, we manually inspect the ballots produced by the VVPAT machine, until we are sufficiently confident that the election result is right, or we have decided to perform a full manual recount. The election outcome can be confirmed if we audit the ballots until we know that the probability of failing to detect a wrong election result is below a certain level, known as the <em><b>risk limit</b></em> \((\alpha\)) which can be set to arbitrarily small values.
+        <b>Risk limiting audits</b> are an effective and practical method for post-election verification of the election outcome across various electoral systems. In this, we manually inspect the ballots produced by the VVPAT machine, until we are sufficiently confident that the election result is right, or we have decided to perform a full manual recount.
+        The election outcome can be confirmed if we audit the ballots until we know that the probability of failing to detect a wrong election result is below a certain level,
+        known as the <em><b>risk limit</b></em> \((\alpha\)) which can be set to arbitrarily small values.
         <P>Decreasing the risk limit would lead to an increase in the expected number of ballots to be audited.
         </p>
         <p>
-        Our <b>Risk-Computing Tool</b> can be used to compute the most efficient risk-limits to which to
-        perform risk-limit auditing in constituencies, in order to check the overall parliamentary election result.
+        Our <b>Risk-Computing Tool</b>
+        The tools can be used to estimate the best way of combining individual-constituency audits to efficeintly check the overall parliamentary election
+        result.  They compute the most efficient risk-limits to which to
+        perform risk-limit auditing in constituencies, given the kind of audit, assuming that the announced results are correct.
         We then direct the user to perform the risk-limiting audit on each constituency using
-        <b>Starks's Ballot Comparison Audit</b>.
+        Philip Stark's online tools.
         </p>
+
+
 
         <p>
         Our new <A HREF="TBA"> paper</A> gives the technical details for efficient parliamentary audits. The desired confidence level in the overall
-        elections can be shared by individual constituencies. The product of the risk limits in the
-        individual constituencies is the overall risk limit. When a coalition wins the elections,
+        elections can be shared by individual constituencies.
+        <!-- The product of the risk limits in the
+        individual constituencies is the overall risk limit. -->
+        When a coalition wins the elections,
         auditing is done in those constituencies where the parties belonging to that particular
         coalition have won. The sharing of the risk limits is done assuming that the election outcome
         is correct in the audited constituencies. If during the audit the result in any constituency
@@ -770,8 +778,9 @@
 
                 <ul>
                 <li>Select an input file having extension .csv in the format as mentioned in the TOOL tab.</li>
+                <li>Select an audit method for the individual constituencies.
                 <li>Select the checkboxes in the first row against the parties which form the winning coalition</li>
-                <li>Select the constituencies in the first column for which the data is known perfectly. For e.g.
+                <li>Select the constituencies in the first column for which the data is known perfectly. For example,
                     in constituencies where full manual recounting has been performed, we know the ground truth.
                 </li>
                 <li>Set the desired overall risk limit.</li>
@@ -869,26 +878,31 @@
             <div class="panel-heading">Technical Notes</div>
             <div class="panel-body">
                 <p >
-                Say the desired overall risk limit is $$ \alpha $$
+                Suppose the desired overall risk limit is \(\alpha.\)
                 </p>
                 <p>This is the probability of (mistakenly) accepting an election result that is actually wrong.  The probability is over the random choices of the audit.</p>
                 <p >
                     We can audit constituency <em>i</em> in which the winner has won to risk limit
-                    $$\alpha_i $$
+                    \(\alpha_i,\)
                 </p>
                 <p >
                 where \(\alpha_i\) is some constant between 0 and 1. A <em>flipset</em> is a set of constituencies
                 whose result when flipped will alter the election results. We need to be sure we do not (mistakenly)
                 accept the results in all these constituencies when they are actually wrong.  Therefore the \(\alpha_i\) must be such that
-                in any <em>flipset</em>, the product of the \(\alpha_i\) of the constituencies be less than or equal to \(\alpha\).
+                in any <em>flipset</em>, the product of the \(\alpha_i\) of the constituencies is less than or equal to \(\alpha\).
                 </p>
-                <p >
-                    In ballot-level comparison audits, the cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is
-                    \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\).
+                <p >The expected number of samples necessary to complete an audit, assuming that the announced results are correct, is a function of the risk limit
+                  and the diluted margin \(\mu_i\), i.e. the winning margin divided by the total number of ballots that count for either the winner or the runner-up.</P>
+
+                  <P> In <A HREF="https://www.stat.berkeley.edu/~stark/Vote/auditTools.htm"> LSKM ballot-level comparison audits</A>, the expected cost of auditing constituency i to risk limit \(\alpha_i\) is proportional to
+                  \(\frac{-log(\alpha_i)}{\mu_i}\).</P>
+
+                  <P>In <A HREF="https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm">BRAVO ballot-polling audits</A>, the expected cost of auditing constituency i to risk limit \(\alpha_i\) is harder to estimate,
+                  but is approximately proportional to
+                  \(\frac{-log(\alpha_i)}{\mu^2_i}\) when there are two candidates who dominate.</P>
+
 
                     <p> Our tool solves the Linear Program to minimize the total expected auditing cost assuming the announced results are correct.
-                    The cost of auditing constituency i to risk limit \(\alpha_i\) where the diluted margin is
-                    \(\mu_i\) is proportional to \(\frac{\alpha_i}{\mu_i}\) in the case of Ballot Comparison.
                 </p>
             </div>
         </div>
