@@ -382,6 +382,7 @@
                 if(sum>=Math.floor(constArray.length/2)+1)
                     return (sum-Math.floor(constArray.length/2));
                 else
+                    console.log(coalition);
                     throw('Not sufficient seats in coalition to form government');
             }
             catch(e){
@@ -451,7 +452,8 @@
                 var toppleMargin = findToppleMargin();
                 if(toppleMargin==undefined)
                     throw('Error at finding expected number of ballots. Invalid toppling Margin.');
-		if(auditMethod != "BRAVOBallotPolling" && auditMethod != "LSKMComparision")
+      console.log(auditMethod);
+    if(auditMethod != "BRAVOBallotPolling" && auditMethod != "LSKMComparison")
                     throw('Error at finding expected number of ballots. Invalid auditing method.');
             }catch(e){
                 alert(e);
@@ -459,11 +461,12 @@
             }
             var sum=0.0;
             for(var j=idx; j<sortWinMargArray.length; j++){
-		if(auditMethod == "BRAVOBallotPolling")
-                    sum+=1.0/sortWinMargArray[j]/sortWinMargArray[j]/;
-		else if(auditMethod == "LSKMComparison")
+		            if(auditMethod == "BRAVOBallotPolling"){
+                    sum+=1.0/sortWinMargArray[j]/sortWinMargArray[j];
+                }else if(auditMethod == "LSKMComparison"){
                     sum+=1.0/sortWinMargArray[j];
                 }
+            }
             sum*=1.0/(toppleMargin-idx);
             return sum;
         }
@@ -496,7 +499,9 @@
                 var toppleMargin =findToppleMargin();
                 if(toppleMargin==undefined)
                     throw('Error at finding overall risks. Invalid toppling margin.');
-		var auditMethod = "LSKMComparison"; //VT: Obviously need to update this to let the user choose the option.
+
+                var auditMethod=$('input[name=auditMethod]:checked').val();
+		                 // var auditMethod = "LSKMComparison"; //VT: Obviously need to update this to let the user choose the option.
             }catch(e){
                 alert(e);
                 return undefined;
@@ -539,7 +544,7 @@
                         riskArray[i]=0;
                     }
                 }
-                $("#expecAudit").val(Math.ceil(findExpec(sortWinMargArray, minIdx)*Math.log(1/risk)));
+                $("#expecAudit").val(Math.ceil(findExpec(sortWinMargArray, minIdx, auditMethod)*Math.log(1/risk)));
             }
             //Changing the meta-data of current Audit
             document.getElementById("metaData").style="display: block;";
@@ -791,6 +796,17 @@
                             <label class="btn btn-danger">Browse
                             <input type="file" id="inputFile" onchange="loadFile()" accept=".csv" style="display: none;">
                             </label>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Audit Method</div>
+                        <div class="panel-body">
+                            <label for="auditMethod">Select Audit Method:</label>
+                            &nbsp; &nbsp;<br>
+                            <input type="radio" name="auditMethod" value="LSKMComparison" checked>&nbsp;LSKM Comparison</input><br>
+                            <input type="radio" name="auditMethod" value="BRAVOBallotPolling">&nbsp;Bravo Ballot Polling</input>
+
+
                         </div>
                     </div>
                     <div class="panel panel-default">
