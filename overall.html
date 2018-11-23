@@ -159,9 +159,10 @@
         No Parameters
         Return type: boolean*/
         function buildOverallMat(dataIn) {
+            // console.log(dataIn);
             var curConst;
             var c, p, v;
-            for(var i=0; i<dataIn.length-1; i++){ //VT: Not sure why this only runs to length-1.
+            for(var i=0; i<dataIn.length-1; i++){ //VT: Not sure why this only runs to length-1. VM: Somehow the last row in dataIn is null always
                 curConst=dataIn[i]["STATE NAME"]+"_"+dataIn[i]["CONSTITUENCY NAME"];
                 if(constPresent(constArray, curConst)==-1){
                     constArray.push(curConst);
@@ -294,7 +295,29 @@
             }
             return percWLArray;
         }
+        /*Function to find the BRAVO Cost factor for the winner's constituencies
+        defined as 1/(mu*mu*p_wl)
+        Parameters: None
+        Returns: Array storing the cost factors*/
+        function findBRAVOcf(){
+            try{
+                var margins = findMargins();
+                if(margins==undefined)
+                    throw('Error at finding BRAVO cost factors. Invalid margins');
+                var PWLArray = findPercWL();
+                if(PWLArray==undefined)
+                    throw('Error at finding BRAVO cost factors. Invalid PWLArray');
+            }catch(e){
+                alert(e);
+                return undefined;
+            }
 
+            var BRAVOcfArray = [];
+            for (var i = 0; i < constArray.length; i++) {
+                BRAVOcfArray.push(1/(Math.pow(margins[i], 2)*PWLArray[i]));
+            }     
+            return BRAVOcfArray;
+        }
         /*Function to find the winners in every constituency
         No Parameters
         Return Value: 1D array storing Winning Party number in every constituency*/
@@ -442,6 +465,9 @@
                 var margArray =findMargins();
                 if(margArray==undefined)
                     throw('Error at finding Winner\'s margins. Invalid Margins Array.');
+                var BRAVOcfArray = findBRAVOcf();
+                if(BRAVOcfArray==undefined)
+                    throw('Error at finding P_WL\'s margins. Invalid P_WL Array.');
                 var winArray =findWinners();
                 if(winArray==undefined)
                     throw('Error at finding Winner\'s margins. Invalid Winner\'s Array.');
@@ -457,44 +483,58 @@
             }
 
             var winMargArray = [];
+            var winBCFArray = [];
             var check=0;
             for(var i=0; i<constArray.length; i++){
                 check = document.getElementById('consti_' + i);
                 if(inCoalition(winArray[i]) && !check.checked){
                     winMargArray.push(margArray[i]);
+                    winBCFArray.push(BRAVOcfArray[i]);
                 }
             }
-            return winMargArray;
+            return [winMargArray, winBCFArray];
         }
+        
+        /*Auxiliary function to find the expected factor for the number of votes in the
+        BRAVO method
+        Parameters: Array storing the BRAVO cost factors for the winner's constituencies
+        in descending order, Idx-number of constituencies to drop.
+        Return value: Expected factor*/
+        function findBRAVOExpec(sortWinBCFArray, idx){
+            var toppleMargin = findToppleMargin();
+            if(toppleMargin==undefined)
+                throw('Error at finding expected number of ballots. Invalid toppling Margin.');
+            var sum=0.0;
+            for(var j=idx; j<sortWinBCFArray.length; j++){
+                sum+=sortWinBCFArray[j];   
+            }
+            sum*=1.0/(toppleMargin-idx);
+            console.log(sum);
+            return sum;
+        }  
         /*Auxilliary function to find the expected factor for the number of votes in auditing
-        a particular subset of constituencies where the winner has won.
+        using LSKM, a particular subset of constituencies where the winner has won.
         Parameters: Index of constituency after which constituencies are only audited (when
         sorted in non-decreasing order of diluted margins)
         Return value: Expected factor*/
-        function findExpec(sortWinMargArray, idx, auditMethod){
+        function findLSKMExpec(sortWinMargArray, idx){
             try{
                 var coalition =findCoalition();
                 if(coalition==undefined)
-                    throw('Error at finding expected number of ballots. Invalid coalition array.');
+                    throw('Error at finding LSKM expected number of ballots. Invalid coalition array.');
                 var toppleMargin = findToppleMargin();
                 if(toppleMargin==undefined)
-                    throw('Error at finding expected number of ballots. Invalid toppling Margin.');
-      console.log(auditMethod);
-    if(auditMethod != "BRAVOBallotPolling" && auditMethod != "LSKMComparison")
-                    throw('Error at finding expected number of ballots. Invalid auditing method.');
+                    throw('Error at finding LSKM expected number of ballots. Invalid toppling Margin.');
             }catch(e){
                 alert(e);
                 return undefined;
             }
             var sum=0.0;
             for(var j=idx; j<sortWinMargArray.length; j++){
-		            if(auditMethod == "BRAVOBallotPolling"){
-                    sum+=1.0/sortWinMargArray[j]/sortWinMargArray[j];
-                }else if(auditMethod == "LSKMComparison"){
-                    sum+=1.0/sortWinMargArray[j];
-                }
+                sum+=1.0/sortWinMargArray[j];   
             }
             sum*=1.0/(toppleMargin-idx);
+            console.log(sum);
             return sum;
         }
         /*Main auxilliary function to find the risks upto which the constituencies should be audited
@@ -505,21 +545,30 @@
                 var margArray =findMargins();
                 if(margArray==undefined)
                     throw('Error at finding overall risks. Invalid margins array.');
-                var percWLArray = findpercWLArray();
-                if(percWLArray==undefined)
-                    throw('Error at finding p-WL. Invalid Array describing fractions of votes to winner and runner-up.');
+                var BRAVOcfArray=findBRAVOcf();
+                if(BRAVOcfArray==undefined)
+                    throw('Error at finding overall risks. Invalid BRAVO cf array.');
                 var winArray = findWinners();
                 if(winArray==undefined)
                     throw('Error at finding overall risks. Invalid winner\'s array.');
                 var winner = findOverWin();
                 if(winner==undefined)
                     throw('Error at finding overall risks. Invalid winner.');
-                var winMargArray =findWinMarg();
+                var winTuple = findWinMarg();
+                if(winTuple==undefined)
+                    throw('Error at finding overall risks. Invalid winTuple.');
+                var winMargArray =winTuple[0];
                 if(winMargArray==undefined)
                     throw('Error at finding overall risks. Invalid winner\'s margins array.');
-                var sortWinMargArray=(findWinMarg().sort(numberLessThan));
+                var sortWinMargArray=(winTuple[0].sort(numberLessThan)); //ascending order
                 if(sortWinMargArray==undefined)
                     throw('Error at finding overall risks. Invalid sorted winner\'s margins array.');
+                var winBCFArray = winTuple[1];
+                if(winBCFArray==undefined)
+                    throw('Error at finding overall risks. Invalid winner\'s BCF array.');
+                var sortWinBCFArray=(winTuple[1].sort(numberLessThan).reverse()); //descending order
+                if(sortWinBCFArray==undefined)
+                    throw('Error at finding overall risks. Invalid sorted winner\'s BCF array.');
                 var coalition =findCoalition();
                 if(coalition==undefined)
                     throw('Error at finding overall risks. Invalid coalition array.');
@@ -535,10 +584,9 @@
                 alert(e);
                 return undefined;
             }
-            var minIdx=0, minMargin;
+            
             var riskArray = []; //Stores the risk limit for every constituency
-            var count=0, dCount=0, check; //Counter for audited and dropped constituencies
-            var dropStr='';  //String storing the names of dropped constituencies
+            console.log(toppleMargin);
             if(sortWinMargArray.length<toppleMargin){
                 for(var i=0; i<constArray.length; i++){
                     riskArray[i]=0;
@@ -546,20 +594,54 @@
                 $("#expecAudit").val(0);
             }
             else{
-                for(var i=1; i<toppleMargin; i++){
-                    if(findExpec(sortWinMargArray, minIdx,auditMethod)>findExpec(sortWinMargArray, i,auditMethod))
-                        minIdx = i;
+                var expecCost = 0.0;
+                var tempCost = 0.0;
+                var minIdx=0;
+                var minMargin=0;
+                var maxBCF = 0;
+                var count=0, dCount=0, check; //Counter for audited and dropped constituencies
+                var dropStr='';  //String storing the names of dropped constituencies
+                
+                if(toppleMargin>1){
+                    if(auditMethod=="LSKMComparison")
+                        expecCost = findLSKMExpec(sortWinMargArray, 0);
+                    else
+                        expecCost = findBRAVOExpec(sortWinBCFArray, 0);
                 }
-                winMargArray.sort(numberLessThan); //Non-decereasing order
-                minMargin = winMargArray[minIdx];
+                for(var i=1; i<toppleMargin; i++){
+                    if(auditMethod=="LSKMComparison")
+                        tempCost = findLSKMExpec(sortWinMargArray, i);
+                    else
+                        tempCost = findBRAVOExpec(sortWinBCFArray, i);
+                    if(expecCost>tempCost){
+                        expecCost = tempCost;
+                        minIdx = i;
+                    }
+                }
+                
+                if(auditMethod=="LSKMComparison"){
+                    minMargin = sortWinMargArray[minIdx];
+                }
+                else{
+                    maxBCF = sortWinBCFArray[minIdx];
+                }
+                // console.log(auditMethod);
+                // console.log(minMargin);
+                // console.log(maxBCF);
+                // console.log(expecCost);
+                // console.log(minIdx);
+                // console.log("Start");
+                // console.log(sortWinBCFArray);
 
                 for(i=0; i<constArray.length; i++){
                     check = document.getElementById('consti_' + i);
                     if(check.checked)
                         riskArray[i]=0;
                     else if(inCoalition(winArray[i])){ //If not a winner's constituency, no need to audit
-                        if(margArray[i]<minMargin){ //If diluted margin in winner's constituency is less
-                            dCount++;               //than the prescribed upper limit, no need to audit
+                        // console.log(BRAVOcfArray[i]);
+                        if((auditMethod=="LSKMComparison" && margArray[i]<minMargin) //Filter constituencies having greater margin
+                        || (auditMethod=="BRAVOBallotPolling" && BRAVOcfArray[i]>maxBCF)){ //Filter const. having lesser cost fac 
+                            dCount++;               
                             riskArray[i]=0;
                             dropStr+=constArray[i];
                             dropStr+='; ';
@@ -573,8 +655,9 @@
                         riskArray[i]=0;
                     }
                 }
-                $("#expecAudit").val(Math.ceil(findExpec(sortWinMargArray, minIdx, auditMethod)*Math.log(1/risk)));
+                $("#expecAudit").val(Math.ceil(expecCost*Math.log(1/risk)));
             }
+
             //Changing the meta-data of current Audit
             document.getElementById("metaData").style="display: block;";
             $("#winConst").val(count+dCount);
@@ -794,7 +877,7 @@
                 It contains the column headers and you just have to fill in the data. Sample filled in
                 input file <a href="trial.csv" download>Sample Input</a>. The excel file containing results
                 from the 2014 General Elections is available at <a href="http://eci.nic.in/eci_main/archiveofge2014/33.ConstituencyWiseDetailedResultPC.xlsx">
-                Constituency wise detailed result</a>.
+                Constituency wise detailed result</a>. The CSV file of the 2014 General Elections having the appropriate headers is available at <a href="ConstituencyWise.csv" download>2014 GE CSV</a>.
             </div>
         </div>
 
