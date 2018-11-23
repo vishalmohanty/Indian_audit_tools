@@ -248,8 +248,9 @@
             return percArray;
         }
         /*Function to find the diluted margin in every constituency
+        **(This is called mu_i in our paper.)
         No Parameters
-        Return value: 1D array storing the diluted margins*/
+        Return value: 1D array storing the diluted margins.*/
         function findMargins(){
             try{
                 var percArray =convToPerc();
@@ -268,6 +269,32 @@
             }
             return margArray;
         }
+
+        /*Function to find the fraction of votes in every constituency
+        **that were given to either the winner or the runner-up.
+        **(This is called p_wl in our paper.)
+        No Parameters
+        Return value:  1D array storing the summed fractions of
+        winner's and runner-up's votes.*/
+        function findPercWL(){
+            try{
+                var percArray =convToPerc();
+                if(percArray==undefined)
+                    throw('Invalid Percentage Data');
+            }
+            catch(e){
+                alert(e);
+                return undefined;
+            }
+            var percWLArray = new Array(constArray.length);
+            var sortedArray = [];
+            for(var i=0; i<constArray.length; i++){
+                sortedArray = percArray[i].slice().sort(numberLessThan).reverse();
+                percWLArray[i] = sortedArray[0]+sortedArray[1];
+            }
+            return percWLArray;
+        }
+
         /*Function to find the winners in every constituency
         No Parameters
         Return Value: 1D array storing Winning Party number in every constituency*/
@@ -478,6 +505,9 @@
                 var margArray =findMargins();
                 if(margArray==undefined)
                     throw('Error at finding overall risks. Invalid margins array.');
+                var percWLArray = findpercWLArray();
+                if(percWLArray==undefined)
+                    throw('Error at finding p-WL. Invalid Array describing fractions of votes to winner and runner-up.');
                 var winArray = findWinners();
                 if(winArray==undefined)
                     throw('Error at finding overall risks. Invalid winner\'s array.');
@@ -501,7 +531,6 @@
                     throw('Error at finding overall risks. Invalid toppling margin.');
 
                 var auditMethod=$('input[name=auditMethod]:checked').val();
-		                 // var auditMethod = "LSKMComparison"; //VT: Obviously need to update this to let the user choose the option.
             }catch(e){
                 alert(e);
                 return undefined;
